@@ -3255,7 +3255,7 @@ body {
         <!-- 餐厅标记点 -->
         <div class="map-pin-enhanced active" style="top:18%;left:12%" onclick="event.stopPropagation(); go(2, 0)" data-restaurant-id="0">
           <div class="pin-card-enhanced active">
-            <div class="pin-thumb" style="background: url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=150&fit=crop') center/cover;"></div>
+            <div class="pin-thumb" style="background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&h=150&fit=crop') center/cover;"></div>
             <div class="pin-info">
               <div class="pin-name-enhanced">沙县小吃</div>
               <div class="pin-meta-enhanced">
@@ -4521,7 +4521,7 @@ const restaurants = [
     price: 22,
     speed: '8分钟',
     speedSource: '基于最近30条订单计算',
-    image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=500&fit=crop',
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=500&fit=crop',
     school: '天津财大',
     walkTime: '4分钟',
     reviews: 237,
@@ -5634,6 +5634,12 @@ function s2RenderReviews() {
   `).join('');
 }
 
+function decodeHtmlEntities(text) {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = text;
+  return tempDiv.textContent || tempDiv.innerText || '';
+}
+
 function s2UpdatePageData(restaurant) {
   const details = restaurantDetails[restaurant.id] || restaurantDetails[0];
   
@@ -5677,7 +5683,12 @@ function s2UpdatePageData(restaurant) {
   if (statusCrowdLabel) statusCrowdLabel.textContent = crowdLabel;
   
   const aiVerdict = document.getElementById('s2-aiVerdict');
-  if (aiVerdict) aiVerdict.innerHTML = details.aiVerdict;
+  if (aiVerdict) {
+    let cleanText = details.aiVerdict;
+    cleanText = cleanText.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    cleanText = cleanText.replace(/&amp;/g, '&');
+    aiVerdict.innerHTML = cleanText;
+  }
   
   const aiFeedbackCount = document.getElementById('s2-aiFeedbackCount');
   if (aiFeedbackCount) aiFeedbackCount.textContent = details.aiFeedbackCount;
@@ -5689,7 +5700,12 @@ function s2UpdatePageData(restaurant) {
   if (opinionLabel) opinionLabel.textContent = details.opinionLabel;
   
   const opinionLead = document.getElementById('s2-opinionLead');
-  if (opinionLead) opinionLead.innerHTML = details.opinionLead;
+  if (opinionLead) {
+    let cleanOpinion = details.opinionLead;
+    cleanOpinion = cleanOpinion.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    cleanOpinion = cleanOpinion.replace(/&amp;/g, '&');
+    opinionLead.innerHTML = cleanOpinion;
+  }
   
   const kwList = document.querySelector('.s2-kw-list');
   if (kwList) {
@@ -5703,7 +5719,12 @@ function s2UpdatePageData(restaurant) {
   }
   
   const caveatText = document.querySelector('.s2-caveat-text');
-  if (caveatText) caveatText.innerHTML = details.caveat;
+  if (caveatText) {
+    let cleanCaveat = details.caveat;
+    cleanCaveat = cleanCaveat.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    cleanCaveat = cleanCaveat.replace(/&amp;/g, '&');
+    caveatText.innerHTML = cleanCaveat;
+  }
   
   const todayNoticeList = document.getElementById('s2-todayNoticeList');
   if (todayNoticeList) {
@@ -5739,7 +5760,11 @@ function s2UpdatePageData(restaurant) {
   
   const reviewsList = document.getElementById('s2-reviewsList');
   if (reviewsList) {
-    reviewsList.innerHTML = details.reviews.map(review => `
+    reviewsList.innerHTML = details.reviews.map(review => {
+      let cleanText = review.text;
+      cleanText = cleanText.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      cleanText = cleanText.replace(/&amp;/g, '&');
+      return `
       <div class="s2-review-entry">
         <div class="s2-rev-top">
           <div class="s2-rev-user">
@@ -5764,10 +5789,10 @@ function s2UpdatePageData(restaurant) {
             <span class="s2-rev-scene-tag">${review.scene}</span>
           </div>
         </div>
-        <div class="s2-rev-body">${review.text}</div>
+        <div class="s2-rev-body">${cleanText}</div>
         <div class="s2-rev-date">${review.date}</div>
       </div>
-    `).join('');
+    `}).join('');
   }
 }
 
