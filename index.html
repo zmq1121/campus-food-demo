@@ -4218,6 +4218,299 @@ let pageHistory = [0];
 let currentRestaurant = 0;
 
 // 餐厅数据
+const restaurantDetails = {
+  0: {
+    aiVerdict: '现在去是&lt;strong&gt;今天最佳时段&lt;/strong&gt;，已过午高峰，当前等位为零。按你"两节课间隙"的需求，全程预计 &lt;strong&gt;15 分钟内&lt;/strong&gt;可完成。',
+    aiFeedbackCount: 38,
+    aiUpdateTime: '3 分钟前更新',
+    opinionLabel: '237 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;两节课间隙&lt;/strong&gt;场景，同学评价高度一致：出餐速度是最大优势，几乎没有踩雷案例。唯一需要注意的是周五晚上。',
+    keywords: [
+      { name: '出餐快', value: 89, positive: true, count: 89 },
+      { name: '分量足', value: 74, positive: true, count: 74 },
+      { name: '性价比高', value: 61, positive: true, count: 61 },
+      { name: '位置宽敞', value: 45, positive: true, count: 45 },
+      { name: '周五高峰慢', value: 34, positive: false, count: 34 }
+    ],
+    caveat: '34 位同学提到周五晚（18:00–20:00）等位较长，今天是周三，&lt;span&gt;可放心前往。&lt;/span&gt;',
+    todayNotices: [
+      { text: '蒸饺今日进了新鲜食材，多位同学反馈皮薄汤足，强烈推荐', type: 'green' },
+      { text: '番茄蛋汤今日已售完，可改点酸辣汤', type: 'red' },
+      { text: '下午 15:00–17:00 是今日最空档期，出餐速度最快', type: 'orange' }
+    ],
+    sceneRecommendations: [
+      { scene: '两节课间隙', dish: '拌面 + 蒸饺', price: 19, note: '12 分钟内搞定，最高频组合，86 位同学本月点过' },
+      { scene: '月底省钱', dish: '蛋炒饭 + 清汤', price: 15, note: '15元吃饱，月底首选，62位同学力荐' }
+    ],
+    reviews: [
+      { name: '邹明琪', school: '天津财经 · 数管', avatar: '邹', avatarColor: 'var(--orange)', frequency: '本月 3 次', stars: 5, scene: '两节课间隙', text: '两节课间隙去的，点了&lt;b&gt;拌面加蒸饺&lt;/b&gt;，6分钟就好了，分量很足，吃完刚好来得及上课。这个性价比在天财周边真的找不到第二家。', date: '3 天前 · 经邮箱认证' },
+      { name: '王同学', school: '南开大学', avatar: '王', avatarColor: 'var(--blue)', frequency: '跨校 2 次', stars: 4, scene: '月底省钱', text: '从南开骑过来专程吃的，¥15 的炒饭套餐含饮料，在这个物价水平里是真实惠。周五晚上等了约 20 分钟，其他时段很快。', date: '上周 · 跨校来访 · 经邮箱认证' },
+      { name: '陈同学', school: '天津财经 · 金融', avatar: '陈', avatarColor: '#8840C8', frequency: '本月 5 次', stars: 5, scene: '考前续命', text: '期末周连续5天午饭都在这吃，说明问题了。打包回图书馆也行，不会洒。就是环境嘈杂，不适合约会，快去快回完全没问题。', date: '2 天前 · 经邮箱认证' }
+    ]
+  },
+  1: {
+    aiVerdict: '早餐时段刚过，现在去&lt;strong&gt;人不多&lt;/strong&gt;，专门骑单车过来吃肠粉很值。按你"早餐/早午餐"需求，预计 &lt;strong&gt;20 分钟内&lt;/strong&gt;搞定。',
+    aiFeedbackCount: 25,
+    aiUpdateTime: '8 分钟前更新',
+    opinionLabel: '345 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;早餐/早午餐&lt;/strong&gt;场景，肠粉是绝对招牌，嫩滑多汁，酱汁是灵魂。很多同学专门跨校过来吃。',
+    keywords: [
+      { name: '肠粉滑', value: 95, positive: true, count: 95 },
+      { name: '酱汁赞', value: 88, positive: true, count: 88 },
+      { name: '跨校推荐', value: 72, positive: true, count: 72 },
+      { name: '价格实惠', value: 65, positive: true, count: 65 },
+      { name: '队伍长', value: 28, positive: false, count: 28 }
+    ],
+    caveat: '28 位同学提到早高峰（7:30–8:30）要排队，今天已过，&lt;span&gt;可放心前往。&lt;/span&gt;',
+    todayNotices: [
+      { text: '鸡蛋肠粉今日售罄，推荐试试牛肉肠粉', type: 'red' },
+      { text: '今日推出新品：虾仁肠粉，试营业8折', type: 'orange' },
+      { text: '老板说今天的米浆特别好，肠粉更滑', type: 'green' }
+    ],
+    sceneRecommendations: [
+      { scene: '早餐首选', dish: '瘦肉肠粉 + 豆浆', price: 16, note: '经典组合，78位同学早餐必点' },
+      { scene: '跨校觅食', dish: '双拼肠粉 + 凉茶', price: 22, note: '来都来了，吃好一点！' }
+    ],
+    reviews: [
+      { name: '冯同学', school: '天津科技大学', avatar: '冯', avatarColor: 'var(--green)', frequency: '每周 4 次', stars: 5, scene: '早餐', text: '吃了四年的店！&lt;b&gt;肠粉超级嫩滑&lt;/b&gt;，酱汁是灵魂！每次有朋友来都带他们来吃。今天的米浆确实不一样！', date: '今天 · 早餐打卡' },
+      { name: '何同学', school: '天津财经', avatar: '何', avatarColor: 'var(--orange)', frequency: '跨校 2 次', stars: 5, scene: '周末觅食', text: '专门骑单车过来吃的，真的值得！肠粉太好吃了，就是有点远。建议早一点来，避开人流。', date: '上周 · 跨校觅食' },
+      { name: '刘同学', school: '天津科技大学', avatar: '刘', avatarColor: 'var(--blue)', frequency: '本月 6 次', stars: 4, scene: '早餐', text: '肠粉确实好吃，就是有时候队伍太长。建议早点来，或者错峰吃。性价比很高！', date: '4天前 · 早餐' }
+    ]
+  },
+  2: {
+    aiVerdict: '现在人流适中，炸酱面是招牌，适合喜欢面食的同学。按你"面食爱好者"需求，预计 &lt;strong&gt;25 分钟内&lt;/strong&gt;搞定。',
+    aiFeedbackCount: 18,
+    aiUpdateTime: '12 分钟前更新',
+    opinionLabel: '167 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;面食爱好者&lt;/strong&gt;场景，地道北京味是核心优势，面条筋道，炸酱香浓。北方同学评价尤其高。',
+    keywords: [
+      { name: '面条筋道', value: 82, positive: true, count: 82 },
+      { name: '炸酱正宗', value: 78, positive: true, count: 78 },
+      { name: '分量足', value: 71, positive: true, count: 71 },
+      { name: '北京味', value: 65, positive: true, count: 65 },
+      { name: '有点咸', value: 25, positive: false, count: 25 }
+    ],
+    caveat: '25 位同学提到炸酱有点咸，建议提前说"少酱"，&lt;span&gt;口味更合适。&lt;/span&gt;',
+    todayNotices: [
+      { text: '今天的黄瓜丝特别新鲜，配炸酱面一绝', type: 'green' },
+      { text: '腊八蒜今日免费提供，解腻神器', type: 'orange' },
+      { text: '今晚有免费面汤，记得要一碗', type: 'green' }
+    ],
+    sceneRecommendations: [
+      { scene: '面食爱好者', dish: '经典炸酱面 + 腊八蒜', price: 25, note: '招牌必点，北方同学的乡愁解药' },
+      { scene: '换换口味', dish: '茄丁面 + 凉菜', price: 23, note: '不想吃炸酱？试试茄丁面也很棒' }
+    ],
+    reviews: [
+      { name: '许同学', school: '天津财经', avatar: '许', avatarColor: 'var(--orange)', frequency: '本月 4 次', stars: 5, scene: '解乡愁', text: '作为北京人，终于找到家乡的味道了！&lt;b&gt;炸酱很正宗&lt;/b&gt;，面条筋道，强烈推荐！今天的腊八蒜真的绝了！', date: '今天 · 解乡愁' },
+      { name: '蒋同学', school: '天津财经', avatar: '蒋', avatarColor: 'var(--green)', frequency: '本月 2 次', stars: 4, scene: '午餐', text: '分量很足，男生也能吃饱。就是炸酱有点咸，建议少加一点。面汤免费这点很贴心！', date: '3天前 · 午餐' },
+      { name: '张同学', school: '天津职业技术师大', avatar: '张', avatarColor: 'var(--blue)', frequency: '跨校 1 次', stars: 5, scene: '面食', text: '听朋友推荐过来的，确实不错！面条筋道，炸酱很香。就是离我们学校有点远。', date: '上周 · 跨校' }
+    ]
+  },
+  3: {
+    aiVerdict: '虽然是人流高峰，但面包刚出炉，值得！按你"下午茶"需求，建议 &lt;strong&gt;17:30后&lt;/strong&gt;再去，那时人会少很多。',
+    aiFeedbackCount: 42,
+    aiUpdateTime: '5 分钟前更新',
+    opinionLabel: '289 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;下午茶/早餐&lt;/strong&gt;场景，面包新鲜出炉是最大卖点，蛋挞和泡芙是绝对招牌，香飘整条街。',
+    keywords: [
+      { name: '面包新鲜', value: 94, positive: true, count: 94 },
+      { name: '蛋挞绝了', value: 91, positive: true, count: 91 },
+      { name: '泡芙好吃', value: 85, positive: true, count: 85 },
+      { name: '香气四溢', value: 78, positive: true, count: 78 },
+      { name: '人多要等', value: 45, positive: false, count: 45 }
+    ],
+    caveat: '芝士蛋挞和草莓泡芙今日已售罄，&lt;span&gt;推荐试试原味泡芙和葡式蛋挞。&lt;/span&gt;',
+    todayNotices: [
+      { text: '芝士蛋挞今日售罄，明日赶早', type: 'red' },
+      { text: '草莓泡芙今日售罄，推荐原味泡芙', type: 'red' },
+      { text: '17:30后第二锅面包出炉，那时候去刚好', type: 'orange' }
+    ],
+    sceneRecommendations: [
+      { scene: '下午茶', dish: '葡式蛋挞 + 原味泡芙', price: 18, note: '经典下午茶组合，67位同学今日已点' },
+      { scene: '早餐首选', dish: '奶香吐司 + 热牛奶', price: 12, note: '元气早餐，开启美好的一天' }
+    ],
+    reviews: [
+      { name: '杨同学', school: '天津财经', avatar: '杨', avatarColor: 'var(--yellow)', frequency: '每天都来', stars: 5, scene: '下午茶', text: '每天下课都要来买！&lt;b&gt;蛋挞刚出炉的时候超级好吃&lt;/b&gt;，泡芙也很棒！今天虽然芝士蛋挞没了，但原味的也不错！', date: '今天 · 下午茶' },
+      { name: '朱同学', school: '天津财经', avatar: '朱', avatarColor: 'var(--orange)', frequency: '每周 5 次', stars: 5, scene: '早餐', text: '面包都很新鲜，价格也不贵。早餐经常在这里买，强烈推荐！奶香吐司配热牛奶，绝了！', date: '4天前 · 早餐' },
+      { name: '刘同学', school: '天津科技大学', avatar: '刘', avatarColor: 'var(--blue)', frequency: '跨校 2 次', stars: 4, scene: '周末', text: '专门过来买面包的，确实很香！就是人太多了，建议早点来。蛋挞真的值得一等！', date: '上周 · 跨校' }
+    ]
+  },
+  4: {
+    aiVerdict: '现在人流非常低，环境安静，适合健身和轻食爱好者。按你"减肥/健身"需求，&lt;strong&gt;现在去完美&lt;/strong&gt;，人少不用等。',
+    aiFeedbackCount: 15,
+    aiUpdateTime: '18 分钟前更新',
+    opinionLabel: '189 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;健身/轻食&lt;/strong&gt;场景，新鲜健康是核心，沙拉搭配均衡，环境安静，甚至适合看书学习。',
+    keywords: [
+      { name: '食材新鲜', value: 88, positive: true, count: 88 },
+      { name: '搭配均衡', value: 82, positive: true, count: 82 },
+      { name: '环境安静', value: 75, positive: true, count: 75 },
+      { name: '适合健身', value: 72, positive: true, count: 72 },
+      { name: '价格稍贵', value: 28, positive: false, count: 28 }
+    ],
+    caveat: '28 位同学提到价格稍贵，适合偶尔吃吃，&lt;span&gt;但健康是无价的！&lt;/span&gt;',
+    todayNotices: [
+      { text: '今日鸡胸肉特别嫩，强烈推荐！', type: 'green' },
+      { text: '牛油果今日新鲜到货，加量不加价', type: 'green' },
+      { text: '今日点沙拉送全麦面包一片', type: 'orange' }
+    ],
+    sceneRecommendations: [
+      { scene: '健身减脂', dish: '鸡胸肉藜麦沙拉', price: 28, note: '高蛋白低脂肪，健身党首选' },
+      { scene: '学习小憩', dish: '牛油果沙拉 + 美式咖啡', price: 35, note: '营养补充 + 咖啡因，学习效率翻倍' }
+    ],
+    reviews: [
+      { name: '刘同学', school: '天津财经', avatar: '刘', avatarColor: 'var(--green)', frequency: '每周 4 次', stars: 5, scene: '健身打卡', text: '减肥期间的救星！&lt;b&gt;沙拉分量足，食材新鲜&lt;/b&gt;，鸡胸肉很嫩。已经连续吃了一周了。今天还送了全麦面包，太贴心了！', date: '2天前 · 健身打卡' },
+      { name: '陈同学', school: '天津财经', avatar: '陈', avatarColor: 'var(--blue)', frequency: '每周 2 次', stars: 4, scene: '学习局', text: '环境不错，适合安静地吃饭或看书。就是价格稍贵，偶尔吃吃还可以。沙拉确实很健康！', date: '上周 · 学习局' },
+      { name: '王同学', school: '天津财经', avatar: '王', avatarColor: 'var(--orange)', frequency: '偶尔来', stars: 5, scene: '轻食', text: '朋友推荐来的，确实不错！食材新鲜，搭配合理。环境很安静，适合一个人吃饭或思考。', date: '3天前 · 轻食' }
+    ]
+  },
+  5: {
+    aiVerdict: '氛围极佳的日式料理，适合约会和庆祝，但需要提前预约。按你"约会/庆祝"需求，&lt;strong&gt;建议先预约&lt;/strong&gt;，体验会更好。',
+    aiFeedbackCount: 22,
+    aiUpdateTime: '25 分钟前更新',
+    opinionLabel: '312 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;约会/庆祝&lt;/strong&gt;场景，环境和服务是最大优势，刺身新鲜，寿司精致，是纪念日和生日的首选。',
+    keywords: [
+      { name: '环境好', value: 96, positive: true, count: 96 },
+      { name: '刺身新鲜', value: 92, positive: true, count: 92 },
+      { name: '服务贴心', value: 88, positive: true, count: 88 },
+      { name: '适合约会', value: 85, positive: true, count: 85 },
+      { name: '价格偏高', value: 35, positive: false, count: 35 }
+    ],
+    caveat: '三文鱼刺身今日已售罄，&lt;span&gt;推荐试试北极贝和甜虾，也很新鲜。&lt;/span&gt;',
+    todayNotices: [
+      { text: '三文鱼刺身今日售罄，明日赶早', type: 'red' },
+      { text: '今日预约送味增汤一份', type: 'orange' },
+      { text: '今晚有特别菜单：季节限定松茸饭', type: 'green' }
+    ],
+    sceneRecommendations: [
+      { scene: '约会庆祝', dish: '特选刺身拼盘 + 寿司卷', price: 128, note: '纪念日首选，颜值与美味并存' },
+      { scene: '朋友小聚', dish: '日式煎饺 + 豚骨拉面', price: 68, note: '温馨小聚，轻松惬意' }
+    ],
+    reviews: [
+      { name: '王同学', school: '天津财经', avatar: '王', avatarColor: 'var(--orange)', frequency: '特殊场合', stars: 5, scene: '约会', text: '纪念日来的，&lt;b&gt;环境超级棒！&lt;/b&gt;服务员很贴心，还送了小甜品。寿司很新鲜，强烈推荐！虽然三文鱼没了，但北极贝也很棒！', date: '昨天 · 约会' },
+      { name: '周同学', school: '天津财经', avatar: '周', avatarColor: 'var(--purple)', frequency: '生日聚餐', stars: 4, scene: '生日聚餐', text: '环境确实很好，就是需要提前预约。刺身拼盘很新鲜，但是价格对学生来说有点贵。不过特殊场合值得！', date: '上周 · 生日聚餐' },
+      { name: '李同学', school: '天津科技大学', avatar: '李', avatarColor: 'var(--blue)', frequency: '跨校', stars: 5, scene: '约会', text: '带女朋友来的，她超级喜欢！环境很有氛围，服务也很好。就是有点远，但是值得！', date: '2周前 · 跨校约会' }
+    ]
+  },
+  6: {
+    aiVerdict: '麻辣鲜香，特别下饭，适合同学聚餐。按你"聚餐/爱吃辣"需求，&lt;strong&gt;现在去刚好&lt;/strong&gt;，人不多不用等。',
+    aiFeedbackCount: 28,
+    aiUpdateTime: '15 分钟前更新',
+    opinionLabel: '223 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;聚餐/爱吃辣&lt;/strong&gt;场景，正宗川味是核心，麻辣香锅和麻婆豆腐是招牌，是室友聚餐的首选。',
+    keywords: [
+      { name: '味道正宗', value: 91, positive: true, count: 91 },
+      { name: '麻辣够劲', value: 87, positive: true, count: 87 },
+      { name: '下饭神器', value: 84, positive: true, count: 84 },
+      { name: '聚餐首选', value: 79, positive: true, count: 79 },
+      { name: '有点辣', value: 22, positive: false, count: 22 }
+    ],
+    caveat: '22 位同学提到有点辣，不能吃辣的同学建议提前说"微辣"，&lt;span&gt;口味更合适。&lt;/span&gt;',
+    todayNotices: [
+      { text: '今日推荐：麻辣香锅，特别香！', type: 'green' },
+      { text: '今天的麻婆豆腐特别正宗', type: 'green' },
+      { text: '多人聚餐送酸梅汤一扎', type: 'orange' }
+    ],
+    sceneRecommendations: [
+      { scene: '室友聚餐', dish: '麻辣香锅 + 麻婆豆腐', price: 45, note: '经典组合，下饭神器，78位同学聚餐必点' },
+      { scene: '单人简餐', dish: '回锅肉盖饭', price: 28, note: '一个人也要好好吃饭！' }
+    ],
+    reviews: [
+      { name: '沈同学', school: '天津职业技术师大', avatar: '沈', avatarColor: 'var(--red)', frequency: '每周 3 次', stars: 5, scene: '寝室聚餐', text: '太好吃了！&lt;b&gt;麻辣香锅超赞&lt;/b&gt;，麻婆豆腐也很正宗。是我和室友们的聚餐首选！今天还送了酸梅汤，太爽了！', date: '昨天 · 寝室聚餐' },
+      { name: '韩同学', school: '天津财经', avatar: '韩', avatarColor: 'var(--orange)', frequency: '偶尔来', stars: 4, scene: '同学聚会', text: '味道不错，就是有点辣。不能吃辣的同学建议提前说微辣。麻辣香锅真的很香！', date: '上周 · 同学聚会' },
+      { name: '杨同学', school: '天津职业技术师大', avatar: '杨', avatarColor: 'var(--green)', frequency: '每周 2 次', stars: 5, scene: '午餐', text: '作为四川人，终于找到家乡的味道了！麻辣够劲，下饭神器。强烈推荐给爱吃辣的同学！', date: '3天前 · 午餐' }
+    ]
+  },
+  7: {
+    aiVerdict: '正宗潮汕牛肉火锅，牛肉新鲜，适合多人聚餐。按你"聚餐/吃好的"需求，&lt;strong&gt;现在去刚好&lt;/strong&gt;，人不多不用等。',
+    aiFeedbackCount: 20,
+    aiUpdateTime: '30 分钟前更新',
+    opinionLabel: '178 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;聚餐/吃好的&lt;/strong&gt;场景，牛肉新鲜是核心，吊龙和匙柄是招牌，汤底鲜美，是生日和部门聚餐的首选。',
+    keywords: [
+      { name: '牛肉新鲜', value: 94, positive: true, count: 94 },
+      { name: '汤底鲜美', value: 89, positive: true, count: 89 },
+      { name: '吊龙绝了', value: 86, positive: true, count: 86 },
+      { name: '适合聚餐', value: 81, positive: true, count: 81 },
+      { name: '价格稍贵', value: 32, positive: false, count: 32 }
+    ],
+    caveat: '32 位同学提到价格对学生来说有点贵，&lt;span&gt;适合偶尔吃吃，重要场合值得！&lt;/span&gt;',
+    todayNotices: [
+      { text: '今日推荐：吊龙，特别新鲜！', type: 'green' },
+      { text: '今天的匙柄也很不错，推荐试试', type: 'green' },
+      { text: '多人聚餐送蔬菜拼盘一份', type: 'orange' }
+    ],
+    sceneRecommendations: [
+      { scene: '生日聚餐', dish: '吊龙 + 匙柄 + 牛丸', price: 168, note: '招牌必点，新鲜牛肉吃到爽' },
+      { scene: '双人小聚', dish: '精选牛肉拼盘 + 蔬菜', price: 98, note: '两个人也要吃得好！' }
+    ],
+    reviews: [
+      { name: '秦同学', school: '天津师范大学', avatar: '秦', avatarColor: 'var(--orange)', frequency: '重要场合', stars: 5, scene: '生日聚餐', text: '牛肉超级新鲜！&lt;b&gt;吊龙和匙柄都很好吃&lt;/b&gt;，汤底也很鲜。就是距离有点远。今天还送了蔬菜拼盘，太贴心了！', date: '上周 · 生日聚餐' },
+      { name: '尤同学', school: '天津财经', avatar: '尤', avatarColor: 'var(--blue)', frequency: '偶尔来', stars: 4, scene: '部门聚餐', text: '味道不错，就是价格对学生来说有点贵。偶尔吃吃还可以，适合重要场合。牛肉确实很新鲜！', date: '2周前 · 部门聚餐' },
+      { name: '赵同学', school: '天津师范大学', avatar: '赵', avatarColor: 'var(--green)', frequency: '生日必来', stars: 5, scene: '庆祝', text: '每年生日都来这里！牛肉新鲜，汤底鲜美，服务也很好。强烈推荐给爱吃牛肉的同学！', date: '3周前 · 庆祝' }
+    ]
+  },
+  8: {
+    aiVerdict: '煲仔饭锅巴香脆，营业至凌晨，是夜猫子的救星。按你"夜宵/复习到深夜"需求，&lt;strong&gt;现在去刚好&lt;/strong&gt;，人不多不用等。',
+    aiFeedbackCount: 32,
+    aiUpdateTime: '40 分钟前更新',
+    opinionLabel: '256 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;夜宵/复习到深夜&lt;/strong&gt;场景，锅巴香脆是最大卖点，营业至凌晨，是期末复习党的深夜食堂。',
+    keywords: [
+      { name: '锅巴香', value: 95, positive: true, count: 95 },
+      { name: '营业晚', value: 92, positive: true, count: 92 },
+      { name: '腊味正宗', value: 88, positive: true, count: 88 },
+      { name: '深夜食堂', value: 85, positive: true, count: 85 },
+      { name: '等待稍长', value: 25, positive: false, count: 25 }
+    ],
+    caveat: '25 位同学提到等待时间有点长，建议错开高峰期去，&lt;span&gt;好饭不怕等，锅巴值得！&lt;/span&gt;',
+    todayNotices: [
+      { text: '今日推荐：腊味煲仔饭，锅巴特别香！', type: 'green' },
+      { text: '今晚复习到深夜？来这里就对了！', type: 'orange' },
+      { text: '深夜下单送例汤一份', type: 'green' }
+    ],
+    sceneRecommendations: [
+      { scene: '深夜复习', dish: '腊味煲仔饭 + 例汤', price: 35, note: '期末复习党的救星，锅巴配汤，越吃越香' },
+      { scene: '日常午餐', dish: '香菇滑鸡煲仔饭', price: 32, note: '不吃腊味？试试滑鸡也很棒' }
+    ],
+    reviews: [
+      { name: '赵同学', school: '天津医科大学', avatar: '赵', avatarColor: 'var(--yellow)', frequency: '深夜常客', stars: 5, scene: '深夜复习', text: '期末复习到深夜，&lt;b&gt;这家店简直是救星！&lt;/b&gt;锅巴超香，腊味正宗，而且营业到很晚。今天还送了例汤，太暖心了！', date: '1天前 · 深夜复习' },
+      { name: '孙同学', school: '天津财经', avatar: '孙', avatarColor: 'var(--orange)', frequency: '偶尔来', stars: 4, scene: '夜宵', text: '煲仔饭很不错，就是等待时间有点长。建议错开高峰期去，锅巴真的绝了！值得一等！', date: '上周 · 夜宵' },
+      { name: '周同学', school: '天津医科大学', avatar: '周', avatarColor: 'var(--blue)', frequency: '每周 3 次', stars: 5, scene: '夜班', text: '作为医学生，经常值夜班，这家店简直是福音！锅巴香脆，腊味正宗，营业时间晚，强烈推荐！', date: '3天前 · 夜班' }
+    ]
+  },
+  9: {
+    aiVerdict: '环境安静舒适的咖啡馆，适合学习和小组讨论。按你"学习/写论文"需求，&lt;strong&gt;现在去刚好&lt;/strong&gt;，人不多还有位置。',
+    aiFeedbackCount: 16,
+    aiUpdateTime: '20 分钟前更新',
+    opinionLabel: '198 条同学评价提炼',
+    opinionLead: '针对&lt;strong&gt;学习/写论文&lt;/strong&gt;场景，环境安静是最大优势，插座多，WiFi稳，是写论文和小组讨论的绝佳去处。',
+    keywords: [
+      { name: '环境安静', value: 96, positive: true, count: 96 },
+      { name: '插座多', value: 92, positive: true, count: 92 },
+      { name: 'WiFi稳', value: 89, positive: true, count: 89 },
+      { name: '咖啡好喝', value: 85, positive: true, count: 85 },
+      { name: '周末人多', value: 28, positive: false, count: 28 }
+    ],
+    caveat: '28 位同学提到周末人有点多，建议早点去占位置，&lt;span&gt;今天是周三，人不多， perfect！&lt;/span&gt;',
+    todayNotices: [
+      { text: '今日推荐：拿铁 + 提拉米苏，绝配！', type: 'green' },
+      { text: '今日自习区空位充足，快来学习！', type: 'green' },
+      { text: '下午3-5点有手冲咖啡品鉴活动', type: 'orange' }
+    ],
+    sceneRecommendations: [
+      { scene: '写论文', dish: '拿铁 + 提拉米苏', price: 45, note: '写论文的绝佳搭配，咖啡因+糖分，效率翻倍' },
+      { scene: '小组讨论', dish: '美式咖啡 + 华夫饼', price: 38, note: '轻松讨论，灵感迸发' }
+    ],
+    reviews: [
+      { name: '吴同学', school: '天津财大', avatar: '吴', avatarColor: 'var(--brown)', frequency: '每周 5 次', stars: 5, scene: '写论文', text: '写论文的绝佳去处！&lt;b&gt;环境安静，插座多，WiFi稳定&lt;/b&gt;。拿铁很好喝，提拉米苏也不错。今天位置充足，太棒了！', date: '4天前 · 写论文' },
+      { name: '郑同学', school: '天津财大', avatar: '郑', avatarColor: 'var(--green)', frequency: '每周 3 次', stars: 4, scene: '小组讨论', text: '环境很好，适合学习。就是周末人有点多，建议早点去占位置。咖啡确实不错！', date: '上周 · 小组讨论' },
+      { name: '冯同学', school: '天津科技大学', avatar: '冯', avatarColor: 'var(--blue)', frequency: '跨校', stars: 5, scene: '学习', text: '听朋友推荐过来的，确实是学习的好地方！环境安静，插座多，WiFi稳定。咖啡也很好喝！', date: '2周前 · 跨校学习' }
+    ]
+  }
+};
+
 const restaurants = [
   {
     id: 0,
@@ -4424,7 +4717,7 @@ const restaurants = [
     price: 55,
     speed: '食材新鲜',
     speedSource: '基于最近22条订单计算',
-    image: 'https://images.unsplash.com/photo-1555126634326-3e392919f428?w=800&h=500&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555396273539-584973690515?w=800&h=500&fit=crop',
     school: '天津师范大学',
     walkTime: '20分钟',
     reviews: 178,
@@ -4480,7 +4773,7 @@ const restaurants = [
     price: 32,
     speed: '可久坐',
     speedSource: '基于最近16条订单计算',
-    image: 'https://images.unsplash.com/photo-1445116572660-236099ec97a?w=800&h=500&fit=crop',
+    image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&h=500&fit=crop',
     school: '天津财经大学',
     walkTime: '12分钟',
     reviews: 198,
@@ -5342,53 +5635,140 @@ function s2RenderReviews() {
 }
 
 function s2UpdatePageData(restaurant) {
-  const data = {
-    name: restaurant.name,
-    branch: restaurant.school,
-    image: restaurant.image,
-    rating: restaurant.rating,
-    reviewCount: restaurant.reviews,
-    distance: restaurant.walkTime + ' · ' + restaurant.distance,
-    avgPrice: restaurant.price,
-    openTime: '至 22:00',
-    waitTime: parseInt(restaurant.speed),
-    crowd: 'low',
-    crowdText: '人流低',
-    crowdLabel: '无需等位'
-  };
-
+  const details = restaurantDetails[restaurant.id] || restaurantDetails[0];
+  
   const heroName = document.getElementById('s2-heroName');
-  if (heroName) heroName.textContent = data.name;
+  if (heroName) heroName.textContent = restaurant.name;
   
   const heroImage = document.getElementById('s2-heroImage');
-  if (heroImage) heroImage.src = data.image;
+  if (heroImage) heroImage.src = restaurant.image;
   
   const heroRating = document.getElementById('s2-heroRating');
-  if (heroRating) heroRating.textContent = data.rating;
+  if (heroRating) heroRating.textContent = restaurant.rating;
   
   const heroReviewCnt = document.getElementById('s2-heroReviewCnt');
-  if (heroReviewCnt) heroReviewCnt.textContent = `（${data.reviewCount}条）`;
+  if (heroReviewCnt) heroReviewCnt.textContent = `（${restaurant.reviews}条）`;
   
   const heroDistance = document.getElementById('s2-heroDistance');
-  if (heroDistance) heroDistance.textContent = data.distance;
+  if (heroDistance) heroDistance.textContent = restaurant.walkTime + ' · ' + restaurant.distance;
   
   const statusPrice = document.getElementById('s2-statusPrice');
-  if (statusPrice) statusPrice.textContent = '¥' + data.avgPrice;
+  if (statusPrice) statusPrice.textContent = '¥' + restaurant.price;
   
   const statusOpenTime = document.getElementById('s2-statusOpenTime');
-  if (statusOpenTime) statusOpenTime.textContent = data.openTime;
+  if (statusOpenTime) statusOpenTime.textContent = '至 22:00';
   
+  const speedText = restaurant.speed.replace(/[^0-9]/g, '');
+  const waitTime = speedText ? parseInt(speedText) : 8;
   const statusWaitTime = document.getElementById('s2-statusWaitTime');
-  if (statusWaitTime) statusWaitTime.textContent = '约 ' + data.waitTime + ' min';
+  if (statusWaitTime) statusWaitTime.textContent = '约 ' + waitTime + ' min';
+  
+  const crowd = restaurant.realtimeStatus?.crowd || 'low';
+  const crowdText = restaurant.realtimeStatus?.crowdText || '人流低';
+  const crowdLabel = crowd === 'low' ? '无需等位' : crowd === 'medium' ? '人流适中' : '需要等位';
   
   const statusCrowd = document.getElementById('s2-statusCrowd');
   if (statusCrowd) {
-    statusCrowd.textContent = data.crowdText;
-    statusCrowd.className = 's2-status-val ' + (data.crowd === 'low' ? 's2-sv-green' : data.crowd === 'medium' ? 's2-sv-orange' : 's2-sv-red');
+    statusCrowd.textContent = crowdText;
+    statusCrowd.className = 's2-status-val ' + (crowd === 'low' ? 's2-sv-green' : crowd === 'medium' ? 's2-sv-orange' : 's2-sv-red');
   }
   
-  const totalReviewCount = document.getElementById('s2-totalReviewCount');
-  if (totalReviewCount) totalReviewCount.textContent = data.reviewCount;
+  const statusCrowdLabel = document.querySelector('#s2-statusCrowd + .s2-status-lbl');
+  if (statusCrowdLabel) statusCrowdLabel.textContent = crowdLabel;
+  
+  const aiVerdict = document.getElementById('s2-aiVerdict');
+  if (aiVerdict) aiVerdict.innerHTML = details.aiVerdict;
+  
+  const aiFeedbackCount = document.getElementById('s2-aiFeedbackCount');
+  if (aiFeedbackCount) aiFeedbackCount.textContent = details.aiFeedbackCount;
+  
+  const aiUpdateTime = document.getElementById('s2-aiUpdateTime');
+  if (aiUpdateTime) aiUpdateTime.textContent = details.aiUpdateTime;
+  
+  const opinionLabel = document.getElementById('s2-opinionLabel');
+  if (opinionLabel) opinionLabel.textContent = details.opinionLabel;
+  
+  const opinionLead = document.getElementById('s2-opinionLead');
+  if (opinionLead) opinionLead.innerHTML = details.opinionLead;
+  
+  const kwList = document.querySelector('.s2-kw-list');
+  if (kwList) {
+    kwList.innerHTML = details.keywords.map(kw => `
+      <div class="s2-kw-row">
+        <div class="s2-kw-name">${kw.name}</div>
+        <div class="s2-kw-track"><div class="s2-kw-fill ${kw.positive ? 's2-kf-pos' : 's2-kf-warn'}" style="width:${kw.value}%"></div></div>
+        <div class="s2-kw-cnt">${kw.count} 人</div>
+      </div>
+    `).join('');
+  }
+  
+  const caveatText = document.querySelector('.s2-caveat-text');
+  if (caveatText) caveatText.innerHTML = details.caveat;
+  
+  const todayNoticeList = document.getElementById('s2-todayNoticeList');
+  if (todayNoticeList) {
+    todayNoticeList.innerHTML = details.todayNotices.map(notice => `
+      <div class="s2-today-item">
+        <div class="s2-today-dot s2-td-${notice.type}"></div>
+        ${notice.text}
+      </div>
+    `).join('');
+  }
+  
+  const orderScene = document.querySelectorAll('.s2-order-scene');
+  if (orderScene && orderScene.length > 0 && details.sceneRecommendations.length > 0) {
+    details.sceneRecommendations.forEach((rec, index) => {
+      if (orderScene[index]) {
+        const label = orderScene[index].querySelector('.s2-order-scene-label');
+        const dish = orderScene[index].querySelector('.s2-order-dish');
+        const price = orderScene[index].querySelector('.s2-order-price');
+        const note = orderScene[index].querySelector('.s2-order-note');
+        
+        if (label) label.innerHTML = `
+          <div class="s2-scene-icon ${index === 0 ? 's2-si-or' : 's2-si-gr'}">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          ${rec.scene}
+        `;
+        if (dish) dish.textContent = rec.dish;
+        if (price) price.textContent = '¥' + rec.price;
+        if (note) note.textContent = rec.note;
+      }
+    });
+  }
+  
+  const reviewsList = document.getElementById('s2-reviewsList');
+  if (reviewsList) {
+    reviewsList.innerHTML = details.reviews.map(review => `
+      <div class="s2-review-entry">
+        <div class="s2-rev-top">
+          <div class="s2-rev-user">
+            <div class="s2-rev-av" style="background:${review.avatarColor}">${review.avatar}</div>
+            <div class="s2-rev-user-info">
+              <div class="s2-rev-name">${review.name}</div>
+              <div class="s2-rev-meta-tags">
+                <span class="s2-rev-school">${review.school}</span>
+                <span class="s2-rev-freq">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+                  ${review.frequency}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="s2-rev-right">
+            <div class="s2-rev-stars-mini">
+              ${Array(5).fill(0).map((_, i) => `
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="${i < review.stars ? 'var(--yellow)' : 'var(--muted-2)'}" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              `).join('')}
+            </div>
+            <span class="s2-rev-scene-tag">${review.scene}</span>
+          </div>
+        </div>
+        <div class="s2-rev-body">${review.text}</div>
+        <div class="s2-rev-date">${review.date}</div>
+      </div>
+    `).join('');
+  }
 }
 
 function s2SetScene(el, sceneId) {
