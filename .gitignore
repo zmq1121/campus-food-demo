@@ -1,0 +1,14 @@
+# 开发备份文件
+*.backup.html
+homepage-v1.html
+detail-page-v1.html
+detail-page-new.html
+temp-s2-content.html
+campus-food-unified.html
+campus-food-final.html
+
+# 文档文件
+*.docx
+
+# 原文件（只保留index.html）
+campus-food-demo-v2.html

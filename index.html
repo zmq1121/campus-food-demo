@@ -1,0 +1,5587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>觅食 · 大学城美食地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:      #FF6B35;
+  --orange-2:    #FF8C5E;
+  --orange-pale: #FFF2EB;
+  --cream:       #FBF7F3;
+  --cream-2:     #F2EBE3;
+  --white:       #FFFFFF;
+  --ink:         #1A1410;
+  --ink-2:       #3D2F26;
+  --muted:       #8C7B72;
+  --muted-2:     #C4B8B0;
+  --green:       #2AAE7A;
+  --blue:        #3D88D9;
+  --yellow:      #F0B429;
+  --red:         #E84C3D;
+  --shadow-sm:   0 1px 6px rgba(26,20,16,.07);
+  --shadow-md:   0 4px 16px rgba(26,20,16,.09);
+  --shadow-lg:   0 8px 28px rgba(255,107,53,.14);
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background: #DDD5CC;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px 20px 80px;
+}
+
+/* ── SIDE ANNOTATIONS ────────────────────────────── */
+.ann-col {
+  width: 188px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.ann-col.show { opacity: 1; }
+
+.ann-col.right { padding-top: 260px; }
+.ann-col.left  { padding-top: 80px; }
+
+.ann {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(25,20,16,.1);
+  opacity: 0;
+  animation: ain .35s ease forwards;
+}
+
+.ann:nth-child(1){animation-delay:.2s}
+.ann:nth-child(2){animation-delay:.35s}
+.ann:nth-child(3){animation-delay:.5s}
+.ann:nth-child(4){animation-delay:.65s}
+.ann:nth-child(5){animation-delay:.8s}
+.ann:nth-child(6){animation-delay:.95s}
+
+@keyframes ain {
+  from { opacity:0; transform:translateX(-6px); }
+  to   { opacity:1; transform:none; }
+}
+
+.ann-right .ann {
+  animation-name: ainr;
+}
+@keyframes ainr {
+  from { opacity:0; transform:translateX(6px); }
+  to   { opacity:1; transform:none; }
+}
+
+.ann-marker {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 5px;
+}
+
+.ann-num {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700;
+  color: var(--orange); letter-spacing: .04em;
+}
+
+.ann-line-h {
+  flex: 1; height: 1px; background: rgba(255,107,53,.3);
+}
+
+.ann-title {
+  font-size: 11px; font-weight: 600; color: var(--ink-2);
+  margin-bottom: 3px;
+}
+
+.ann-desc {
+  font-size: 10px; color: var(--muted); line-height: 1.6;
+}
+
+/* ── SVG ICONS ─────────────────────────────────────────── */
+.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.icon-sm { width: 16px; height: 16px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* ── SIDE PANEL ──────────────────────────────────────────── */
+.side {
+  width: 240px;
+  padding-top: 64px;
+  flex-shrink: 0;
+}
+
+.side-logo {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.side-logo span { color: var(--orange); }
+
+.side-tagline {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.side-features {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.side-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.side-feat-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sfi-o { background: var(--orange-pale); }
+.sfi-g { background: rgba(42,174,122,.1); }
+.sfi-b { background: rgba(61,136,217,.1); }
+.sfi-y { background: rgba(240,180,41,.1); }
+
+.side-feat-text h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.side-feat-text p {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.screen-nav-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.snd {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--muted-2);
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.snd.active {
+  width: 22px;
+  border-radius: 4px;
+  background: var(--orange);
+}
+
+.snd-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+/* ── PHONE ───────────────────────────────────────────────── */
+.phone-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.phone-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.phone {
+  width: 375px;
+  height: 812px;
+  border-radius: 46px;
+  background: var(--cream);
+  box-shadow:
+    0 0 0 1.5px rgba(255,255,255,.2),
+    0 0 0 10px #191410,
+    0 36px 80px rgba(20,14,10,.4);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.notch {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 32px;
+  background: #191410;
+  border-radius: 0 0 20px 20px;
+  z-index: 200;
+}
+
+.phone-inner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  border-radius: 46px;
+}
+
+/* ── STATUS BAR ─────────────────────────────────────────── */
+.status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 26px 0;
+  height: 46px;
+  position: relative;
+  z-index: 10;
+}
+
+.status-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── SCREENS ─────────────────────────────────────────────── */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--cream);
+  scrollbar-width: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.screen::-webkit-scrollbar { display: none; }
+
+.screen.off {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(14px);
+}
+
+/* ── BOTTOM NAV ─────────────────────────────────────────── */
+.bnav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 78px;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(26,20,16,.06);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  z-index: 100;
+}
+
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 2px;
+  cursor: pointer;
+}
+
+.bnav-item svg { color: var(--muted-2); transition: color .2s; }
+.bnav-item.on svg { color: var(--orange); }
+
+.bnav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted-2);
+  transition: color .2s;
+  letter-spacing: 0.01em;
+}
+
+.bnav-item.on .bnav-label { color: var(--orange); }
+
+.bnav-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background .2s;
+}
+
+.bnav-item.on .bnav-dot { background: var(--orange); }
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 0 · HOME
+══════════════════════════════════════════════════════════ */
+.s0 { padding-bottom: 88px; }
+
+.s0-header {
+  padding: 54px 20px 0;
+}
+
+/* 增强地图增强样式 */
+.map-block-enhanced {
+  margin: 12px 20px 0;
+  height: 220px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, #E8E2D9 0%, #D8D2C9 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.map-water {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(61,136,217,.15), rgba(61,136,217,.08));
+  border-radius: 50%;
+}
+
+.map-water-1 { width: 80px; height: 40px; top: 30%; left: 10%; transform: rotate(-15deg); }
+.map-water-2 { width: 60px; height: 30px; top: 65%; left: 55%; transform: rotate(10deg); }
+
+.map-park {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(42,174,122,.2), rgba(42,174,122,.1));
+  border-radius: 50%;
+}
+
+.map-park-1 { width: 50px; height: 50px; top: 15%; right: 5%; }
+.map-park-2 { width: 40px; height: 40px; bottom: 20%; left: 30%; }
+
+.map-building {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(255,255,255,.7), rgba(255,255,255,.4));
+  border-radius: 6px;
+}
+
+.map-building-1 { width: 30px; height: 45px; top: 25%; left: 40%; }
+.map-building-2 { width: 25px; height: 35px; top: 45%; right: 20%; }
+.map-building-3 { width: 28px; height: 40px; bottom: 25%; left: 15%; }
+
+.map-road-enhanced {
+  position: absolute;
+  background: rgba(255,255,255,.7);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(26,20,16,.08);
+}
+
+.map-road-main { width: 100%; height: 10px; top: 55%; left: 0; }
+.map-road-cross { width: 10px; height: 100%; top: 0; left: 45%; }
+.map-road-secondary-1 { width: 60%; height: 6px; top: 28%; left: 20%; opacity: .6; }
+.map-road-secondary-2 { width: 6px; height: 40%; top: 30%; left: 70%; opacity: .6; }
+
+.map-pin-enhanced {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform .25s cubic-bezier(.17,.67,.12,.99);
+  z-index: 10;
+}
+
+.map-pin-enhanced:hover { transform: translateY(-4px) scale(1.08); }
+.map-pin-enhanced.active { transform: translateY(-6px) scale(1.1); }
+
+.pin-card-enhanced {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 8px 12px;
+  box-shadow: 0 6px 20px rgba(26,20,16,.18);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  border: 2px solid transparent;
+}
+
+.pin-card-enhanced.active {
+  border-color: var(--orange);
+  box-shadow: 0 8px 24px rgba(255,107,53,.25);
+}
+
+.pin-icon-enhanced {
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pin-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pin-info {
+  flex: 1;
+}
+
+.pin-name-enhanced {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.pin-meta-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pin-price-enhanced {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.pin-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.pin-status-dot.green { background: var(--green); }
+.pin-status-dot.yellow { background: var(--yellow); }
+.pin-status-dot.red { background: var(--red); }
+
+.pin-tail-enhanced {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid var(--white);
+  filter: drop-shadow(0 3px 4px rgba(26,20,16,.12));
+}
+
+.map-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 20;
+}
+
+.map-ctrl-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(26,20,16,.14);
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.map-ctrl-btn:hover { transform: scale(1.08); }
+
+.map-layers {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+}
+
+.map-layer-btn {
+  padding: 5px 10px;
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+  border: 1.5px solid rgba(26,20,16,.08);
+  transition: all .18s;
+}
+
+.map-layer-btn.active {
+  background: var(--orange);
+  color: white;
+  border-color: var(--orange);
+}
+
+/* 探索页地图增强 */
+.ring-card-enhanced {
+  margin: 0 20px 14px;
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.ring-map-enhanced {
+  height: 180px;
+  background: linear-gradient(135deg, #E8E2D9 0%, #D8D2C9 100%);
+  border-radius: var(--r-md);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.ring-center-enhanced {
+  position: relative;
+  z-index: 5;
+}
+
+.center-building {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(255,107,53,.35);
+  border: 3px solid white;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 6px 20px rgba(255,107,53,.35); }
+  50% { box-shadow: 0 6px 30px rgba(255,107,53,.55); }
+}
+
+.ring-path-line {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all .3s;
+}
+
+.ring-path-1 { width: 100px; height: 100px; border-color: rgba(255,107,53,.35); border-style: solid; border-width: 2px; }
+.ring-path-2 { width: 160px; height: 160px; border-color: rgba(255,107,53,.22); }
+.ring-path-3 { width: 220px; height: 220px; border-color: rgba(255,107,53,.12); }
+
+.school-pin-enhanced {
+  position: absolute;
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.17,.67,.12,.99);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(26,20,16,.18);
+  z-index: 10;
+}
+
+.school-pin-enhanced:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26,20,16,.25);
+}
+
+.school-pin-enhanced.active {
+  transform: scale(1.15) translateY(-3px);
+}
+
+.school-pin-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+}
+
+.route-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  top: 50%;
+  left: 50%;
+  transform-origin: left center;
+  opacity: .6;
+  animation: route-pulse 2s infinite;
+}
+
+@keyframes route-pulse {
+  0%, 100% { opacity: .3; }
+  50% { opacity: .8; }
+}
+
+.heat-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.heat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+
+.s0-greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.s0-greet-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.s0-greet-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(255,107,53,.28);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Search */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--white);
+  border-radius: 24px;
+  padding: 11px 16px;
+  margin: 0 20px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.search-row:hover {
+  border-color: var(--orange);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--muted-2);
+}
+
+.ai-badge {
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* Chips */
+.chips-scroll {
+  padding: 12px 0 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chips-scroll::-webkit-scrollbar { display: none; }
+
+.chips-inner {
+  display: inline-flex;
+  gap: 7px;
+  padding-right: 20px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+
+.chip-sel  { background: var(--orange); color: white; box-shadow: 0 3px 10px rgba(255,107,53,.3); }
+.chip-grn  { background: rgba(42,174,122,.1);  color: #1D8A60; border: 1px solid rgba(42,174,122,.2); }
+.chip-blu  { background: rgba(61,136,217,.1);  color: #2568B2; border: 1px solid rgba(61,136,217,.2); }
+.chip-pur  { background: rgba(140,80,200,.1);  color: #6830B4; border: 1px solid rgba(140,80,200,.2); }
+.chip-ylw  { background: rgba(240,180,41,.12); color: #846000; border: 1px solid rgba(240,180,41,.25); }
+.chip-neu  { background: var(--white); color: var(--ink-2); border: 1px solid rgba(26,20,16,.1); }
+
+/* Map */
+.map-block {
+  margin: 12px 20px 0;
+  height: 188px;
+  border-radius: var(--r-lg);
+  background: #E8E2D9;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.map-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(140,123,114,.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,123,114,.09) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.map-road { position: absolute; background: rgba(255,255,255,.65); border-radius: 2px; }
+.mr1 { width:100%; height:7px; top:42%; }
+.mr2 { width:100%; height:4px; top:70%; opacity:.55; }
+.mr3 { width:5px; height:100%; left:36%; }
+.mr4 { width:4px; height:100%; left:67%; opacity:.55; }
+
+.map-pin {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform .18s;
+}
+.map-pin:hover { transform: translateY(-2px) scale(1.04); }
+
+.pin-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 5px 10px;
+  box-shadow: 0 3px 10px rgba(26,20,16,.14);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.pin-card.sel { border: 1.5px solid var(--orange); }
+
+.pin-icon {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.pi-orange { background: var(--orange-pale); }
+.pi-blue   { background: rgba(61,136,217,.1); }
+.pi-green  { background: rgba(42,174,122,.1); }
+
+.pin-name { font-size: 11px; font-weight: 600; color: var(--ink); }
+.pin-price { font-size: 10px; color: var(--orange); font-weight: 600; }
+.pin-tail { width: 2px; height: 5px; background: var(--white); box-shadow: 0 1px 3px rgba(26,20,16,.08); }
+
+.map-campus-tag {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: var(--orange);
+  color: white;
+  border-radius: 12px;
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+}
+
+.map-locate {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  width: 34px; height: 34px;
+  background: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(26,20,16,.12);
+  cursor: pointer;
+}
+
+/* Section headers */
+.sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px 10px;
+}
+
+.sec-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sec-more {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 2px;
+}
+
+/* Horizontal card scroll */
+.hscroll {
+  padding: 0 0 4px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.hscroll::-webkit-scrollbar { display: none; }
+
+.hrow { display: inline-flex; gap: 11px; padding-right: 20px; }
+
+/* Restaurant card */
+.rcard {
+  width: 164px;
+  background: var(--white);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow .2s, transform .2s;
+  flex-shrink: 0;
+}
+
+.rcard:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.rcard-img {
+  height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ri-orange { background: linear-gradient(135deg, #FFDEC8, #FFB385); }
+.ri-green  { background: linear-gradient(135deg, #C6EDD8, #8ADAB0); }
+.ri-red    { background: linear-gradient(135deg, #FFCDC8, #F99085); }
+.ri-blue   { background: linear-gradient(135deg, #C5DEFF, #8BBAF7); }
+.ri-yellow { background: linear-gradient(135deg, #FFF0C0, #FFD97A); }
+.ri-purple { background: linear-gradient(135deg, #E4D0FF, #C29AF7); }
+
+/* Food illustration placeholder - clean SVG shapes */
+.food-illus {
+  width: 52px; height: 52px;
+  opacity: .75;
+}
+
+.rcard-scene-tag {
+  position: absolute;
+  top: 8px; left: 8px;
+  background: rgba(26,20,16,.48);
+  backdrop-filter: blur(3px);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.rcard-hot-tag {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--orange);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: flex; align-items: center; gap: 3px;
+}
+
+.rcard-body { padding: 10px 11px 12px; }
+
+.rcard-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+
+.rcard-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 7px;
+}
+
+.rating {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600; color: var(--ink-2);
+}
+
+.rating svg { color: var(--yellow); }
+
+.sep { width: 2px; height: 2px; border-radius: 50%; background: var(--muted-2); }
+
+.dist-text { font-size: 11px; color: var(--muted); }
+
+.rcard-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.price-unit { font-size: 10px; font-weight: 400; color: var(--muted); }
+
+.speed-pill {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: flex; align-items: center; gap: 3px;
+}
+
+.sp-green  { background: rgba(42,174,122,.1); color: var(--green); }
+.sp-purple { background: rgba(140,80,200,.1);  color: #6830B4; }
+.sp-yellow { background: rgba(240,180,41,.12); color: #846000; }
+
+/* AI banner */
+.ai-banner {
+  margin: 4px 20px 0;
+  background: linear-gradient(135deg, #1D1610 0%, #2E2018 100%);
+  border-radius: var(--r-md);
+  padding: 15px 16px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-banner::after {
+  content: '';
+  position: absolute;
+  top: -28px; right: -18px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(255,107,53,.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.aib-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange-2);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.aib-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.aib-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.aib-tag {
+  font-size: 11px;
+  background: rgba(255,107,53,.18);
+  color: var(--orange-2);
+  padding: 3px 9px;
+  border-radius: 9px;
+  font-weight: 500;
+}
+
+.aib-arrow {
+  margin-left: auto;
+  width: 30px; height: 30px;
+  background: var(--orange);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Row cards */
+.vlist { padding: 0 20px; display: flex; flex-direction: column; gap: 10px; }
+
+.row-card {
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: 12px;
+  display: flex;
+  gap: 11px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow .2s;
+}
+.row-card:hover { box-shadow: var(--shadow-md); }
+
+.row-thumb {
+  width: 68px; height: 68px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.row-info { flex: 1; }
+
+.row-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+
+.row-tags { display: flex; gap: 5px; margin-bottom: 7px; flex-wrap: wrap; }
+
+.tag-o { font-size: 10px; background: var(--orange-pale); color: var(--orange); padding: 2px 7px; border-radius: 5px; font-weight: 500; }
+.tag-g { font-size: 10px; background: rgba(42,174,122,.1); color: var(--green); padding: 2px 7px; border-radius: 5px; font-weight: 500; }
+.tag-b { font-size: 10px; background: rgba(61,136,217,.1); color: var(--blue); padding: 2px 7px; border-radius: 5px; font-weight: 500; }
+
+.row-bottom { display: flex; align-items: center; gap: 8px; }
+.row-price  { font-size: 13px; font-weight: 700; color: var(--orange); }
+.row-dist   { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 3px; }
+.row-rating { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--ink-2); display: flex; align-items: center; gap: 3px; }
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 1 · AI CHAT
+══════════════════════════════════════════════════════════ */
+.s1 { padding-bottom: 0; display: flex; flex-direction: column; }
+.s1-scroll { flex: 1; overflow-y: auto; }
+
+.s1-header {
+  padding: 52px 20px 14px;
+}
+
+.s1-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 3px;
+}
+
+.ai-orb {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(255,107,53,.3);
+  flex-shrink: 0;
+}
+
+.s1-title { font-family: 'Noto Serif SC', serif; font-size: 19px; font-weight: 600; color: var(--ink); }
+.s1-sub   { font-size: 12px; color: var(--muted); margin-left: 44px; }
+
+/* Template pills */
+.tpl-scroll {
+  padding: 10px 0 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tpl-scroll::-webkit-scrollbar { display: none; }
+
+.tpl-row { display: inline-flex; gap: 7px; padding-right: 20px; }
+
+.tpl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--white);
+  border: 1.5px solid rgba(26,20,16,.07);
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--ink-2);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all .18s;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.tpl-pill.sel, .tpl-pill:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--orange-pale);
+}
+
+/* Chat */
+.chat-body { padding: 14px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+.msg-me { display: flex; justify-content: flex-end; }
+
+.bubble-me {
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  max-width: 76%;
+  box-shadow: 0 3px 10px rgba(255,107,53,.22);
+}
+
+.msg-ai  { display: flex; gap: 8px; align-items: flex-start; }
+
+.ai-msg-icon {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bubble-ai {
+  background: var(--white);
+  border-radius: 4px 18px 18px 18px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  max-width: 83%;
+  box-shadow: var(--shadow-sm);
+}
+
+.bubble-ai b { color: var(--ink); font-weight: 700; }
+
+/* Result cards */
+.ai-results { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+
+.ai-res-item {
+  background: var(--cream);
+  border-radius: var(--r-sm);
+  padding: 9px 11px;
+  display: flex; align-items: center; gap: 9px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all .18s;
+}
+
+.ai-res-item:hover, .ai-res-item.top { border-color: var(--orange); background: var(--orange-pale); }
+
+.res-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-num.dim { background: var(--muted-2); }
+
+.res-body { flex: 1; }
+.res-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.res-sub  { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+.res-thumb {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Chat input */
+.chat-input-bar {
+  position: absolute;
+  bottom: 78px; left: 0; right: 0;
+  padding: 8px 16px;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(26,20,16,.05);
+  display: flex; gap: 8px; align-items: center;
+  z-index: 50;
+}
+
+.chat-field {
+  flex: 1;
+  background: var(--cream);
+  border: 1.5px solid rgba(26,20,16,.08);
+  border-radius: 20px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .2s;
+}
+
+.chat-field:focus { border-color: var(--orange); }
+.chat-field::placeholder { color: var(--muted-2); }
+
+.send-btn {
+  width: 35px; height: 35px;
+  background: var(--orange);
+  border: none;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(255,107,53,.28);
+  transition: all .18s;
+}
+
+.send-btn:hover { transform: scale(1.06); }
+
+/* Typing */
+.typing { display: flex; gap: 4px; padding: 2px 0; }
+.typing span {
+  width: 5px; height: 5px;
+  background: var(--muted-2);
+  border-radius: 50%;
+  animation: tdot 1.1s infinite;
+}
+.typing span:nth-child(2) { animation-delay: .18s; }
+.typing span:nth-child(3) { animation-delay: .36s; }
+@keyframes tdot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-4px)} }
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 2 · DETAIL
+══════════════════════════════════════════════════════════ */
+.s2 { padding-bottom: 0; display: flex; flex-direction: column; }
+.s2-scroll { flex: 1; overflow-y: auto; }
+
+.detail-hero {
+  height: 230px;
+  background: linear-gradient(140deg, #FFDEC8 0%, #FFB385 55%, #FF8C5E 100%);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.detail-illus {
+  width: 88px; height: 88px;
+  opacity: .6;
+}
+
+.detail-btn {
+  position: absolute;
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(6px);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(26,20,16,.1);
+  top: 52px;
+  transition: background .2s;
+}
+
+.detail-btn:hover { background: var(--white); }
+.btn-back { left: 16px; }
+.btn-fav  { right: 16px; }
+
+.hero-badge {
+  position: absolute;
+  bottom: 12px; left: 16px;
+  background: rgba(26,20,16,.5);
+  backdrop-filter: blur(4px);
+  color: white;
+  border-radius: 10px;
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.detail-sheet {
+  background: var(--cream);
+  margin-top: -18px;
+  border-radius: 22px 22px 0 0;
+  padding: 20px 20px 0;
+  position: relative;
+}
+
+.detail-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 9px;
+}
+
+.detail-rating-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px; flex-wrap: wrap;
+}
+
+.big-rating {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 700; color: var(--ink);
+}
+
+.rating-cnt { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+.detail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; }
+
+/* 6-cell info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.info-cell {
+  background: var(--white);
+  border-radius: var(--r-sm);
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.info-val { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.info-val.o { color: var(--orange); }
+.info-val.g { color: var(--green); }
+.info-lbl   { font-size: 10px; color: var(--muted); }
+
+/* AI summary */
+.ai-sum {
+  background: linear-gradient(135deg, #1D1610, #2E2018);
+  border-radius: var(--r-md);
+  padding: 14px 15px;
+  margin-bottom: 16px;
+  position: relative; overflow: hidden;
+}
+
+.ai-sum::after {
+  content: '';
+  position: absolute; top:-20px; right:-10px;
+  width: 72px; height: 72px;
+  background: radial-gradient(circle, rgba(255,107,53,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ai-sum-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--orange-2);
+  margin-bottom: 7px;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.ai-sum-text {
+  font-size: 12px;
+  color: rgba(251,247,243,.82);
+  line-height: 1.75;
+  margin-bottom: 10px;
+}
+
+.ai-sum-text b { color: white; }
+
+.ai-sum-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.ast {
+  font-size: 10px;
+  background: rgba(255,107,53,.18);
+  color: var(--orange-2);
+  padding: 3px 9px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Reviews */
+.reviews-block { padding-bottom: 12px; }
+
+.review-item {
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(26,20,16,.05);
+}
+.review-item:last-child { border-bottom: none; }
+
+.rev-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+
+.rev-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+
+.rev-name { font-size: 13px; font-weight: 600; color: var(--ink); flex: 1; }
+
+.rev-school {
+  font-size: 10px;
+  background: rgba(61,136,217,.1);
+  color: var(--blue);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.rev-stars { display: flex; gap: 1px; margin-bottom: 5px; }
+
+.rev-text { font-size: 12px; color: var(--ink-2); line-height: 1.65; }
+.rev-date { font-size: 10px; color: var(--muted-2); margin-top: 5px; }
+
+/* Detail CTA */
+.detail-cta {
+  position: absolute;
+  bottom: 78px; left: 0; right: 0;
+  padding: 8px 16px;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(26,20,16,.05);
+  display: flex; gap: 9px;
+  z-index: 50;
+}
+
+.cta {
+  flex: 1; padding: 12px;
+  border-radius: var(--r-md);
+  font-size: 13px; font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all .18s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+.cta-p {
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  color: white;
+  box-shadow: 0 4px 14px rgba(255,107,53,.3);
+}
+.cta-p:hover { box-shadow: 0 6px 20px rgba(255,107,53,.4); transform: translateY(-1px); }
+
+.cta-s {
+  background: var(--cream-2);
+  color: var(--ink-2);
+  border: 1.5px solid rgba(26,20,16,.09);
+}
+
+/* ══════════════════════════════════════════════════════════
+   NEW DETAIL PAGE (SCREEN 2 UPDATED)
+══════════════════════════════════════════════════════════ */
+.s2-new { padding-bottom: 0; display: flex; flex-direction: column; }
+.s2-new-scroll { flex: 1; overflow-y: auto; }
+
+.s2-hero {
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.s2-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.02);
+  transition: transform .6s ease;
+}
+
+.s2-hero-grad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.32) 0%,
+    rgba(0,0,0,.0) 40%,
+    rgba(0,0,0,.0) 55%,
+    rgba(20,14,10,.72) 100%
+  );
+}
+
+.s2-hero-top {
+  position: absolute;
+  top:0;
+  left:0;
+  right:0;
+  padding: 46px 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.s2-hbtn {
+  width: 34px;
+  height: 34px;
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .18s;
+  border: 1px solid rgba(255,255,255,.2);
+}
+.s2-hbtn:hover { background: rgba(255,255,255,.28); }
+
+.s2-hbtn-row { display: flex; gap: 8px; }
+
+.s2-photo-pill {
+  position: absolute;
+  bottom: 58px;
+  right: 14px;
+  background: rgba(0,0,0,.48);
+  backdrop-filter: blur(6px);
+  color: rgba(255,255,255,.9);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.s2-hero-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 18px 18px;
+  z-index: 10;
+}
+
+.s2-hero-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  line-height: 1.25;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.3);
+}
+
+.s2-hero-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.s2-hero-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+}
+
+.s2-hero-cnt {
+  font-size: 12px;
+  color: rgba(255,255,255,.72);
+  font-weight: 400;
+}
+
+.s2-hero-sep {
+  width: 1px;
+  height: 12px;
+  background: rgba(255,255,255,.3);
+}
+
+.s2-hero-dist {
+  font-size: 12px;
+  color: rgba(255,255,255,.82);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.s2-status-bar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--div);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.s2-status-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  position: relative;
+}
+
+.s2-status-item + .s2-status-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--div);
+}
+
+.s2-status-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.s2-sv-green  { color: var(--green); }
+.s2-sv-orange { color: var(--orange); }
+.s2-sv-red    { color: var(--red); }
+.s2-sv-ink    { color: var(--ink); }
+
+.s2-status-lbl {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: .01em;
+}
+
+.s2-ai-decision {
+  background: var(--ink);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.s2-ai-decision::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,107,53,.18) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.s2-ai-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.s2-ai-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  animation: s2-pulse 2s infinite;
+}
+
+@keyframes s2-pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.6; transform:scale(.85); }
+}
+
+.s2-ai-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--orange-2);
+}
+
+.s2-ai-verdict {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(255,255,255,.92);
+  line-height: 1.6;
+}
+
+.s2-ai-verdict strong { color: white; font-weight: 600; }
+
+.s2-ai-verdict-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.s2-body {
+  background: var(--cream);
+  padding-bottom: 20px;
+}
+
+.s2-section {
+  padding: 20px 18px 0;
+}
+
+.s2-section + .s2-section {
+  border-top: 1px solid var(--div);
+  margin-top: 20px;
+}
+
+.s2-sec-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.s2-sec-label::after {
+  content: '';
+  flex:1;
+  height:1px;
+  background: var(--div);
+}
+
+.s2-scene-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+  margin: 0 -18px;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+.s2-scene-row::-webkit-scrollbar { display: none; }
+
+.s2-scene-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 10px 13px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all .18s;
+  min-width: 100px;
+  border: 1.5px solid transparent;
+}
+
+.s2-scene-pill.active {
+  background: var(--orange-pale);
+  border-color: rgba(255,107,53,.25);
+}
+
+.s2-scene-pill:not(.active) {
+  background: var(--white);
+  border-color: var(--div);
+}
+
+.s2-sp-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.s2-sp-bar-wrap {
+  width: 100%;
+  height: 3px;
+  background: rgba(25,20,16,.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.s2-sp-bar { height:100%; border-radius:2px; }
+.s2-bar-gr { background: var(--green); }
+.s2-bar-or { background: var(--orange); }
+.s2-bar-yl { background: var(--yellow); }
+
+.s2-sp-val { font-size: 10px; color: var(--muted); }
+
+.s2-opinion-lead {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink-2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+.s2-opinion-lead strong { color: var(--ink); font-weight: 600; }
+
+.s2-kw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 16px;
+}
+
+.s2-kw-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.s2-kw-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.s2-kw-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(25,20,16,.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.s2-kw-fill { height:100%; border-radius:3px; transition: width .6s ease; }
+.s2-kf-pos  { background: var(--green); }
+.s2-kf-warn { background: var(--yellow); }
+
+.s2-kw-cnt {
+  font-size: 11px;
+  color: var(--muted);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.s2-caveat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 10px 12px;
+  background: rgba(240,180,41,.08);
+  border-left: 2px solid var(--yellow);
+  border-radius: 0 6px 6px 0;
+  margin-top: 2px;
+}
+
+.s2-caveat-text { font-size: 12px; color: var(--ink-2); line-height: 1.6; }
+.s2-caveat-text span { color: var(--muted); font-size: 11px; }
+
+.s2-peak-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+.s2-peak-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.s2-peak-bar-bg {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  background: var(--cream-2);
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  position: relative;
+}
+
+.s2-peak-bar-fill {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  transition: height .4s ease;
+}
+
+.s2-pb-low  { background: rgba(42,174,122,.35); }
+.s2-pb-mid  { background: rgba(240,180,41,.5); }
+.s2-pb-high { background: rgba(232,68,58,.45); }
+.s2-pb-now  { background: var(--orange); }
+
+.s2-peak-now-marker {
+  position: absolute;
+  top:-2px;
+  left:0;
+  right:0;
+  height:2px;
+  background: var(--orange);
+  border-radius: 2px;
+}
+
+.s2-peak-time {
+  font-size: 9px;
+  color: var(--muted-2);
+  font-weight: 500;
+}
+
+.s2-peak-now .s2-peak-time { color: var(--orange); font-weight: 700; }
+
+.s2-peak-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.s2-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.s2-legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+}
+
+.s2-today-list { display: flex; flex-direction: column; gap: 9px; margin-top: 2px; }
+
+.s2-today-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+
+.s2-today-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.s2-td-green { background: var(--green); }
+.s2-td-red   { background: var(--red); }
+.s2-td-or    { background: var(--orange); }
+
+.s2-order-scene { margin-bottom: 16px; }
+
+.s2-order-scene-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.s2-order-scene-label .s2-scene-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.s2-si-or { background: var(--orange-pale); }
+.s2-si-gr { background: rgba(42,174,122,.1); }
+.s2-si-yl { background: rgba(240,180,41,.1); }
+
+.s2-order-reco {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.s2-order-dish {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.s2-order-price { font-size: 12px; color: var(--orange); font-weight: 600; }
+
+.s2-order-note { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+.s2-reviews-list { display: flex; flex-direction: column; }
+
+.s2-review-entry {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--div);
+}
+.s2-review-entry:last-child { border-bottom: none; }
+
+.s2-rev-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.s2-rev-user { display: flex; align-items: center; gap: 8px; }
+
+.s2-rev-av {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.s2-rev-user-info { display: flex; flex-direction: column; gap: 2px; }
+.s2-rev-name { font-size: 13px; font-weight: 600; color: var(--ink); line-height:1; }
+
+.s2-rev-meta-tags { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+.s2-rev-school {
+  font-size: 10px;
+  font-weight: 500;
+  background: rgba(61,136,217,.09);
+  color: var(--blue);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.s2-rev-freq {
+  font-size: 10px;
+  color: var(--orange);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.s2-rev-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+
+.s2-rev-stars-mini { display: flex; gap: 1px; }
+
+.s2-rev-scene-tag {
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--cream-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.s2-rev-body {
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.s2-rev-body b { color: var(--ink); font-weight: 500; }
+
+.s2-rev-date { font-size: 10px; color: var(--muted-2); margin-top: 5px; }
+
+.s2-load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 0 2px;
+  font-size: 13px;
+  color: var(--orange);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.s2-bottom-cta {
+  position: absolute;
+  bottom: 78px;
+  left: 0;
+  right: 0;
+  background: rgba(250,247,244,.97);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--div);
+  padding: 10px 18px 10px;
+  z-index: 200;
+}
+
+.s2-cta-hint {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.s2-hint-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation: s2-pulse 2s infinite; }
+
+.s2-cta-buttons { display: flex; gap: 9px; }
+
+.s2-cta-sec {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s;
+  border: 1.5px solid var(--div);
+  background: var(--white);
+  color: var(--ink-2);
+  flex-shrink: 0;
+}
+.s2-cta-sec:hover { border-color: var(--orange); color: var(--orange); }
+
+.s2-cta-pri {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s;
+  box-shadow: 0 4px 14px rgba(255,107,53,.32);
+}
+.s2-cta-pri:hover { box-shadow: 0 5px 20px rgba(255,107,53,.44); transform: translateY(-1px); }
+
+.s2-sheet-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 300;
+  align-items: flex-end;
+}
+.s2-sheet-overlay.show { display: flex; }
+
+.s2-sheet {
+  width: 100%;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 18px 28px;
+  animation: s2-slideup .25s ease;
+}
+
+@keyframes s2-slideup {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.s2-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--div);
+  margin: 0 auto 16px;
+}
+
+.s2-sheet-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.s2-sheet-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+.s2-share-preview {
+  background: var(--cream-2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.65;
+  border-left: 2.5px solid var(--orange);
+}
+
+.s2-share-preview b { color: var(--ink); }
+
+.s2-share-actions { display: flex; flex-direction: column; gap: 8px; }
+
+.s2-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: var(--cream);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  transition: background .16s;
+}
+.s2-share-btn:hover { background: var(--orange-pale); color: var(--orange); }
+
+.s2-save-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+
+.s2-save-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .16s;
+  border: 1.5px solid var(--div);
+}
+
+.s2-save-item.selected { border-color: var(--orange); background: var(--orange-pale); }
+.s2-save-item:hover { background: var(--cream-2); }
+
+.s2-save-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.s2-save-name { font-size: 13px; font-weight: 500; color: var(--ink-2); flex: 1; }
+.s2-save-cnt  { font-size: 11px; color: var(--muted); }
+
+.s2-check-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .18s;
+}
+
+.s2-save-item.selected .s2-check-circle {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.s2-sheet-confirm {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-radius: 12px;
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255,107,53,.3);
+}
+
+.s2-section {
+  animation: s2-fi .3s ease both;
+}
+.s2-section:nth-child(1) { animation-delay: .05s; }
+.s2-section:nth-child(2) { animation-delay: .1s; }
+.s2-section:nth-child(3) { animation-delay: .15s; }
+.s2-section:nth-child(4) { animation-delay: .2s; }
+.s2-section:nth-child(5) { animation-delay: .25s; }
+
+@keyframes s2-fi {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 3 · EXPLORE
+══════════════════════════════════════════════════════════ */
+.s3 { padding-bottom: 88px; }
+
+.s3-header { padding: 52px 20px 14px; }
+.s3-title { font-family: 'Noto Serif SC', serif; font-size: 21px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.s3-sub   { font-size: 12px; color: var(--muted); }
+
+/* Campus switcher */
+.cam-scroll { padding: 0 0 14px 20px; overflow-x: auto; scrollbar-width: none; }
+.cam-scroll::-webkit-scrollbar { display: none; }
+.cam-row { display: inline-flex; gap: 8px; padding-right: 20px; }
+
+.cam-btn {
+  padding: 7px 15px;
+  border-radius: 18px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  transition: all .18s; flex-shrink: 0;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.cam-btn.on { background: var(--orange); color: white; box-shadow: 0 3px 10px rgba(255,107,53,.28); }
+.cam-btn:not(.on) { background: var(--white); color: var(--ink-2); border: 1.5px solid rgba(26,20,16,.08); box-shadow: var(--shadow-sm); }
+
+/* Ring map */
+.ring-card {
+  margin: 0 20px 14px;
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ring-map {
+  height: 148px;
+  background: #E8E2D9;
+  border-radius: var(--r-md);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 11px;
+  overflow: hidden;
+}
+
+.ring-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(140,123,114,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,123,114,.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.ring-c {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px dashed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rc1 { width: 60px; height: 60px; border-color: rgba(255,107,53,.35); }
+.rc2 { width: 108px; height: 108px; border-color: rgba(255,107,53,.22); }
+.rc3 { width: 158px; height: 158px; border-color: rgba(255,107,53,.11); }
+
+.ring-center-dot {
+  width: 16px; height: 16px;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 2.5px solid white;
+  box-shadow: 0 2px 8px rgba(255,107,53,.4);
+  z-index: 2; position: relative;
+}
+
+.school-pin {
+  position: absolute;
+  font-size: 10px; font-weight: 700; color: white;
+  padding: 3px 8px;
+  border-radius: 9px;
+  white-space: nowrap;
+}
+
+.sp-blue   { background: var(--blue); }
+.sp-purple { background: #8840C8; }
+.sp-green  { background: var(--green); }
+
+.ring-legend { display: flex; gap: 14px; justify-content: center; }
+
+.ring-leg-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--muted);
+}
+
+.ring-leg-line {
+  width: 14px; height: 0;
+  border-top: 1.5px dashed var(--orange);
+}
+
+/* New student banner */
+.new-stu-banner {
+  margin: 0 20px 14px;
+  background: linear-gradient(135deg, var(--blue) 0%, #5BAAF7 100%);
+  border-radius: var(--r-md);
+  padding: 13px 15px;
+  display: flex; align-items: center; gap: 11px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(61,136,217,.25);
+}
+
+.nsb-icon {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,.2);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.nsb-text { flex: 1; }
+.nsb-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; }
+.nsb-sub   { font-size: 11px; color: rgba(255,255,255,.75); }
+
+/* Rank list */
+.rank-list { padding: 0 20px; display: flex; flex-direction: column; gap: 9px; }
+
+.rank-item {
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: 11px 13px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow .18s;
+}
+.rank-item:hover { box-shadow: var(--shadow-md); }
+
+.rank-n {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px; font-weight: 700;
+  width: 26px; text-align: center;
+  flex-shrink: 0; color: var(--muted-2);
+}
+
+.rank-n.n1 { color: var(--orange); }
+.rank-n.n2 { color: var(--yellow); }
+
+.rank-thumb {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.rank-body { flex: 1; }
+.rank-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.rank-meta { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+
+.rank-votes { text-align: right; flex-shrink: 0; }
+.rank-num   { font-size: 15px; font-weight: 700; color: var(--orange); }
+.rank-lbl   { font-size: 10px; color: var(--muted); }
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 4 · PROFILE
+══════════════════════════════════════════════════════════ */
+.s4 { padding-bottom: 88px; }
+
+.s4-header { padding: 52px 20px 16px; background: linear-gradient(180deg, var(--orange-pale) 0%, var(--cream) 100%); }
+
+.profile-row { display: flex; align-items: center; gap: 13px; }
+
+.profile-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px rgba(255,107,53,.28);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 22px; font-weight: 600; color: white;
+}
+
+.profile-name { font-family: 'Noto Serif SC', serif; font-size: 19px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+
+.profile-school {
+  font-size: 12px; color: var(--muted);
+  display: flex; align-items: center; gap: 5px;
+}
+
+.verified {
+  font-size: 10px;
+  background: rgba(61,136,217,.12);
+  color: var(--blue);
+  padding: 1px 7px; border-radius: 7px; font-weight: 600;
+  display: flex; align-items: center; gap: 3px;
+}
+
+/* Stats */
+.stats-strip {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  background: var(--white);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin: 14px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-c {
+  padding: 13px 6px;
+  text-align: center;
+  border-right: 1px solid rgba(26,20,16,.05);
+}
+.stat-c:last-child { border-right: none; }
+
+.stat-n { font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.stat-l { font-size: 10px; color: var(--muted); }
+
+/* Level */
+.level-card {
+  margin: 0 20px 14px;
+  background: linear-gradient(135deg, #1D1610, #2E2018);
+  border-radius: var(--r-md);
+  padding: 15px 16px;
+  position: relative; overflow: hidden;
+}
+
+.level-card::after {
+  content: '';
+  position: absolute; top:-28px; right:-16px;
+  width: 110px; height: 110px;
+  background: radial-gradient(circle, rgba(255,107,53,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.lv-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+
+.lv-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange-2); margin-bottom: 4px; }
+.lv-name  { font-family: 'DM Sans', sans-serif; font-size: 19px; font-weight: 700; color: white; }
+
+.lv-icon {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,.08);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.lv-bar-wrap { background: rgba(255,255,255,.1); border-radius: 8px; height: 5px; overflow: hidden; margin-bottom: 6px; }
+.lv-bar { height: 100%; width: 68%; background: linear-gradient(90deg, var(--orange), var(--orange-2)); border-radius: 8px; }
+.lv-bar-txt { font-size: 10px; color: rgba(251,247,243,.45); }
+.lv-bar-txt span { color: var(--orange-2); }
+
+/* Map preview */
+.map-preview-card {
+  margin: 0 20px 14px;
+  background: var(--white);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.map-preview-img {
+  height: 100px;
+  background: #E8E2D9;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.mp-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(140,123,114,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,123,114,.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.mp-pin {
+  position: absolute;
+  width: 12px; height: 12px;
+}
+
+.map-preview-foot {
+  padding: 11px 13px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.mpf-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.mpf-sub   { font-size: 11px; color: var(--muted); }
+.mpf-cta   { font-size: 12px; color: var(--orange); font-weight: 600; }
+
+/* History */
+.hist-list { padding: 0 20px; }
+
+.hist-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(26,20,16,.05);
+  cursor: pointer;
+}
+.hist-item:last-child { border-bottom: none; }
+
+.hist-thumb {
+  width: 42px; height: 42px;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.hist-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.hist-meta { font-size: 11px; color: var(--muted); }
+
+.hist-rating { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+
+/* FAB */
+.fab {
+  position: absolute;
+  bottom: 98px; right: 16px;
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 5px 18px rgba(255,107,53,.38);
+  cursor: pointer;
+  z-index: 50;
+  transition: all .18s;
+  animation: fpulse 3s infinite;
+}
+.fab:hover { transform: scale(1.07); }
+
+@keyframes fpulse {
+  0%,100% { box-shadow: 0 5px 18px rgba(255,107,53,.38); }
+  50% { box-shadow: 0 5px 24px rgba(255,107,53,.55), 0 0 0 7px rgba(255,107,53,.08); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 5 · RESTAURANT LIST
+══════════════════════════════════════════════════════════ */
+.s5 { padding-bottom: 88px; }
+
+.s5-header { padding: 52px 20px 14px; }
+.s5-title { font-family: 'Noto Serif SC', serif; font-size: 21px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.s5-sub   { font-size: 12px; color: var(--muted); }
+
+/* Filter bar */
+.filter-bar {
+  padding: 0 20px 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .18s;
+  background: var(--white);
+  color: var(--ink-2);
+  border: 1.5px solid rgba(26,20,16,.08);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-chip.sel {
+  background: var(--orange);
+  color: white;
+  border-color: var(--orange);
+  box-shadow: 0 3px 10px rgba(255,107,53,.28);
+}
+
+/* Restaurant list grid */
+.restaurant-grid {
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* Animate-in */
+.screen > * { animation: fadeup .35s ease both; }
+.screen > *:nth-child(2){animation-delay:.04s}
+.screen > *:nth-child(3){animation-delay:.08s}
+.screen > *:nth-child(4){animation-delay:.12s}
+.screen > *:nth-child(5){animation-delay:.16s}
+.screen > *:nth-child(6){animation-delay:.20s}
+.screen > *:nth-child(7){animation-delay:.24s}
+
+@keyframes fadeup {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* 实时状态模块 */
+.realtime-status-card {
+  background: linear-gradient(135deg, var(--orange-pale), #FFF9F5);
+  border-radius: var(--r-md);
+  padding: 14px 14px;
+  margin-bottom: 16px;
+  border: 1.5px solid rgba(255,107,53,.15);
+}
+
+.realtime-status-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.realtime-status-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.realtime-status-pill {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pill-green { background: rgba(42,174,122,.12); color: var(--green); }
+.pill-yellow { background: rgba(240,180,41,.14); color: #846000; }
+.pill-red { background: rgba(232,76,61,.12); color: var(--red); }
+
+.realtime-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.realtime-item {
+  background: var(--white);
+  border-radius: var(--r-sm);
+  padding: 9px 10px;
+}
+
+.realtime-item-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.realtime-item-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.realtime-item-value.green { color: var(--green); }
+.realtime-item-value.orange { color: var(--orange); }
+.realtime-item-value.red { color: var(--red); }
+
+.realtime-recommendation {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,.7);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sold-out-alert {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(232,76,61,.1);
+  border-radius: 8px;
+  font-size: 10px;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 今日特别推荐 */
+.today-special {
+  margin: 12px 20px 0;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.today-special::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,255,255,.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.today-special-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.85);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.today-special-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.today-special-info {
+  flex: 1;
+}
+
+.today-special-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.today-special-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.85);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.today-special-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0,0,0,.15);
+}
+
+/* 速度来源标注 */
+.speed-source-tag {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* AI结果操作按钮 */
+.ai-result-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ai-action-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all .18s;
+  border: none;
+  font-family: inherit;
+}
+
+.ai-action-primary {
+  background: var(--orange);
+  color: white;
+}
+
+.ai-action-secondary {
+  background: var(--cream-2);
+  color: var(--ink-2);
+}
+
+/* 校园认证弹窗 */
+.verify-modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(26,20,16,.7);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 20px;
+}
+
+.verify-modal.active {
+  display: flex;
+}
+
+.verify-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  width: 100%;
+  max-width: 320px;
+  padding: 22px 20px 18px;
+  box-shadow: var(--shadow-lg);
+}
+
+.verify-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.verify-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.verify-close {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.verify-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.verify-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.verify-step-num {
+  width: 26px;
+  height: 26px;
+  background: var(--orange-pale);
+  color: var(--orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.verify-step-text {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.verify-step-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.verify-step-desc {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.verify-cta {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* 详情页CTA按钮更新 */
+.cta-share {
+  background: var(--cream-2);
+  color: var(--ink-2);
+  border: 1.5px solid rgba(26,20,16,.09);
+}
+
+.cta-table {
+  background: rgba(42,174,122,.1);
+  color: var(--green);
+  border: 1.5px solid rgba(42,174,122,.15);
+}
+</style>
+</head>
+<body>
+
+<!-- LEFT ANNOTATIONS -->
+<div class="ann-col left show" id="ann-left">
+</div>
+
+<!-- SIDE -->
+<div class="side">
+  <div class="side-logo">觅<span>食</span></div>
+  <div class="side-tagline">大学城学生的 30 秒<br>饭局决策助手</div>
+
+  <div class="side-features">
+    <div class="side-feat">
+      <div class="side-feat-icon sfi-o">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" color="#FF6B35"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.22-7.78-1.42 1.42M7.64 16.36l-1.42 1.42M16.36 16.36l1.42 1.42M5.64 7.64 7.06 9.06"/></svg>
+      </div>
+      <div class="side-feat-text">
+        <h4>AI 场景推荐</h4>
+        <p>说出场景，30秒决策</p>
+      </div>
+    </div>
+    <div class="side-feat">
+      <div class="side-feat-icon sfi-g">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" color="#2AAE7A"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+      </div>
+      <div class="side-feat-text">
+        <h4>学生可信口碑</h4>
+        <p>校园邮箱认证，拒绝水军</p>
+      </div>
+    </div>
+    <div class="side-feat">
+      <div class="side-feat-icon sfi-b">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" color="#3D88D9"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="side-feat-text">
+        <h4>跨校联盟探索</h4>
+        <p>发现其他学校的宝藏餐厅</p>
+      </div>
+    </div>
+    <div class="side-feat">
+      <div class="side-feat-icon sfi-y">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" color="#F0B429"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </div>
+      <div class="side-feat-text">
+        <h4>场景化标签</h4>
+        <p>约会·续命·省钱，一键匹配</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-nav-dots" id="dots">
+    <div class="snd active" onclick="go(0)"></div>
+    <div class="snd" onclick="go(1)"></div>
+    <div class="snd" onclick="go(2)"></div>
+    <div class="snd" onclick="go(3)"></div>
+    <div class="snd" onclick="go(4)"></div>
+    <div class="snd" onclick="go(5)"></div>
+    <span class="snd-label" id="slabel">首页地图</span>
+  </div>
+</div>
+
+<!-- PHONE -->
+<div class="phone-wrap">
+  <div class="phone-label">Mobile Preview · 375 × 812</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="phone-inner">
+
+    <!-- ════════════════════════════════
+         S0 · HOME
+    ════════════════════════════════ -->
+    <div class="screen s0" id="s0">
+      <div class="status">
+        <span class="status-time">9:41</span>
+        <div class="status-right">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--ink)"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="var(--ink)" stroke-width="1.4"><path d="M7.5 3C9.8 3 11.8 4 13.2 5.6M1.8 5.6A9 9 0 017.5 3"/><path d="M7.5 6.5c1.2 0 2.3.5 3 1.3M4.5 7.8A4.5 4.5 0 017.5 6.5"/><circle cx="7.5" cy="10.5" r="1" fill="var(--ink)"/></svg>
+          <svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x=".5" y=".5" width="18" height="11" rx="2.5" stroke="var(--ink)" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="9" rx="1.5" fill="var(--ink)"/><path d="M20 4v4a2 2 0 000-4z" fill="var(--ink)" opacity=".4"/></svg>
+        </div>
+      </div>
+
+      <div class="s0-header">
+        <div class="s0-greeting">
+          <div>
+            <div class="s0-greet-text">下午好，邹明琪</div>
+            <div class="s0-greet-sub">
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" color="var(--orange)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              天津财经大学 · 距下课23分钟
+            </div>
+          </div>
+          <div class="avatar">邹</div>
+        </div>
+      </div>
+
+      <div style="padding:0 20px;margin-top:12px">
+        <div class="search-row" onclick="go(1)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--orange)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-text">说说你想吃什么、什么场景…</span>
+          <span class="ai-badge">AI</span>
+        </div>
+      </div>
+
+      <div class="chips-scroll">
+        <div class="chips-inner">
+          <div class="chip chip-sel" onclick="handleSceneChipClick(this, '两节课间隙')">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            两节课间隙
+          </div>
+          <div class="chip chip-grn" onclick="handleSceneChipClick(this, '月底省钱')">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            月底省钱
+          </div>
+          <div class="chip chip-blu" onclick="handleSceneChipClick(this, '约会首选')">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            约会首选
+          </div>
+          <div class="chip chip-pur" onclick="handleSceneChipClick(this, '夜宵续命')">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            夜宵续命
+          </div>
+          <div class="chip chip-ylw" onclick="handleSceneChipClick(this, '带家长')">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            带家长
+          </div>
+          <div class="chip chip-neu" onclick="handleSceneChipClick(this, '考前续命')">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+            考前续命
+          </div>
+        </div>
+      </div>
+
+      <!-- 增强版地图 -->
+      <div class="map-block-enhanced" id="home-map-enhanced" onclick="go(3)">
+        <div class="map-grid"></div>
+        
+        <!-- 水体 -->
+        <div class="map-water map-water-1"></div>
+        <div class="map-water map-water-2"></div>
+        
+        <!-- 公园绿地 -->
+        <div class="map-park map-park-1"></div>
+        <div class="map-park map-park-2"></div>
+        
+        <!-- 建筑物 -->
+        <div class="map-building map-building-1"></div>
+        <div class="map-building map-building-2"></div>
+        <div class="map-building map-building-3"></div>
+        
+        <!-- 道路系统 -->
+        <div class="map-road-enhanced map-road-main"></div>
+        <div class="map-road-enhanced map-road-cross"></div>
+        <div class="map-road-enhanced map-road-secondary-1"></div>
+        <div class="map-road-enhanced map-road-secondary-2"></div>
+
+        <!-- 餐厅标记点 -->
+        <div class="map-pin-enhanced active" style="top:18%;left:12%" onclick="event.stopPropagation(); go(2, 0)" data-restaurant-id="0">
+          <div class="pin-card-enhanced active">
+            <div class="pin-thumb" style="background: url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=150&fit=crop') center/cover;"></div>
+            <div class="pin-info">
+              <div class="pin-name-enhanced">沙县小吃</div>
+              <div class="pin-meta-enhanced">
+                <div class="pin-status-dot green"></div>
+                <span class="pin-price-enhanced">¥22</span>
+              </div>
+            </div>
+          </div>
+          <div class="pin-tail-enhanced"></div>
+        </div>
+
+        <div class="map-pin-enhanced" style="top:42%;left:48%" onclick="event.stopPropagation(); go(2, 1)" data-restaurant-id="1">
+          <div class="pin-card-enhanced">
+            <div class="pin-thumb" style="background: url('https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=200&h=150&fit=crop') center/cover;"></div>
+            <div class="pin-info">
+              <div class="pin-name-enhanced">张记肠粉</div>
+              <div class="pin-meta-enhanced">
+                <div class="pin-status-dot yellow"></div>
+                <span class="pin-price-enhanced">¥18</span>
+              </div>
+            </div>
+          </div>
+          <div class="pin-tail-enhanced"></div>
+        </div>
+
+        <div class="map-pin-enhanced" style="top:65%;left:70%" onclick="event.stopPropagation(); go(2, 3)" data-restaurant-id="3">
+          <div class="pin-card-enhanced">
+            <div class="pin-thumb" style="background: url('https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&h=150&fit=crop') center/cover;"></div>
+            <div class="pin-info">
+              <div class="pin-name-enhanced">麦香烘焙</div>
+              <div class="pin-meta-enhanced">
+                <div class="pin-status-dot red"></div>
+                <span class="pin-price-enhanced">¥20</span>
+              </div>
+            </div>
+          </div>
+          <div class="pin-tail-enhanced"></div>
+        </div>
+
+        <div class="map-pin-enhanced" style="top:25%;left:68%" onclick="event.stopPropagation(); go(2, 9)" data-restaurant-id="9">
+          <div class="pin-card-enhanced">
+            <div class="pin-thumb" style="background: url('https://images.unsplash.com/photo-1445116572660-236099ec97a?w=200&h=150&fit=crop') center/cover;"></div>
+            <div class="pin-info">
+              <div class="pin-name-enhanced">森林咖啡</div>
+              <div class="pin-meta-enhanced">
+                <div class="pin-status-dot green"></div>
+                <span class="pin-price-enhanced">¥32</span>
+              </div>
+            </div>
+          </div>
+          <div class="pin-tail-enhanced"></div>
+        </div>
+
+        <!-- 图层控制 -->
+        <div class="map-layers">
+          <div class="map-layer-btn active" onclick="event.stopPropagation(); toggleMapLayer(this, 'all')">全部</div>
+          <div class="map-layer-btn" onclick="event.stopPropagation(); toggleMapLayer(this, 'food')">美食</div>
+          <div class="map-layer-btn" onclick="event.stopPropagation(); toggleMapLayer(this, 'hot')">热门</div>
+        </div>
+
+        <!-- 地图控制按钮 -->
+        <div class="map-controls">
+          <div class="map-ctrl-btn" onclick="event.stopPropagation(); zoomIn()">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="map-ctrl-btn" onclick="event.stopPropagation(); zoomOut()">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="map-ctrl-btn" onclick="event.stopPropagation(); go(3)">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
+          </div>
+        </div>
+
+        <!-- 校园标签 -->
+        <div class="map-campus-tag">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          天津财大
+        </div>
+      </div>
+
+      <!-- 今日特别推荐 -->
+      <div class="today-special" onclick="go(2, 0)" id="today-special">
+        <div class="today-special-label">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          今日特别推荐
+        </div>
+        <div class="today-special-main">
+          <div class="today-special-info">
+            <div class="today-special-name" id="today-special-name">沙县小吃（东区店）</div>
+            <div class="today-special-meta">
+              <span>人流低谷 · 人少不用等</span>
+              <span>¥22/人</span>
+            </div>
+          </div>
+          <div class="today-special-thumb" id="today-special-thumb" style="background: url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop') center/cover;"></div>
+        </div>
+      </div>
+
+      <!-- AI banner -->
+      <div class="ai-banner" style="margin-top:12px" onclick="go(1)">
+        <div class="aib-label">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" color="var(--orange-2)"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.22-7.78-1.42 1.42M7.64 16.36l-1.42 1.42M16.36 16.36l1.42 1.42M5.64 7.64 7.06 9.06"/></svg>
+          AI 助手
+        </div>
+        <div class="aib-title">告诉AI你的场景<br>30秒帮你找到心仪的餐厅</div>
+        <div class="aib-footer">
+          <span class="aib-tag">智能匹配</span>
+          <span class="aib-tag">实时状态</span>
+          <div class="aib-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards scroll -->
+      <div class="sec-head">
+        <div class="sec-title">同学力荐</div>
+        <div class="sec-more" onclick="go(5)">全部
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="hscroll">
+        <div class="hrow" id="home-restaurant-list">
+        </div>
+      </div>
+
+      <!-- Row list -->
+      <div class="sec-head">
+        <div class="sec-title">跨校宝藏</div>
+        <div class="sec-more" onclick="go(3)">探索<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="vlist" id="cross-campus-list">
+      </div>
+
+    </div><!-- /s0 -->
+
+    <!-- ════════════════════════════════
+         S1 · AI CHAT
+    ════════════════════════════════ -->
+    <div class="screen s1 off" id="s1">
+      <div class="s1-scroll">
+        <div class="status">
+          <span class="status-time">9:41</span>
+          <div class="status-right">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--ink)"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x=".5" y=".5" width="18" height="11" rx="2.5" stroke="var(--ink)" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="9" rx="1.5" fill="var(--ink)"/><path d="M20 4v4a2 2 0 000-4z" fill="var(--ink)" opacity=".4"/></svg>
+          </div>
+        </div>
+
+        <div class="s1-header">
+          <div class="s1-title-row">
+            <div class="ai-orb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.22-7.78-1.42 1.42M7.64 16.36l-1.42 1.42M16.36 16.36l1.42 1.42M5.64 7.64 7.06 9.06"/></svg></div>
+            <div class="s1-title">AI 美食助手</div>
+          </div>
+          <div class="s1-sub">告诉我你的场景，30秒帮你决定吃什么</div>
+        </div>
+
+        <div class="tpl-scroll">
+          <div class="tpl-row" id="template-pills">
+            <div class="tpl-pill sel" data-query="两节课间隙，要快">两节课间隙，要快</div>
+            <div class="tpl-pill" data-query="月底了，20以内">月底了，20以内</div>
+            <div class="tpl-pill" data-query="带对象约会">带对象约会</div>
+            <div class="tpl-pill" data-query="夜宵不想外卖">夜宵不想外卖</div>
+            <div class="tpl-pill" data-query="爸妈来探校">爸妈来探校</div>
+          </div>
+        </div>
+
+        <div class="chat-body" id="chat-body">
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input class="chat-field" id="chat-input" placeholder="说说你想吃什么、什么场景…" type="text"/>
+        <button class="send-btn" id="send-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         S2 · DETAIL
+    ════════════════════════════════ -->
+    <div class="screen s2 off" id="s2">
+      <div class="s2-new">
+        <div class="s2-new-scroll">
+          <div class="s2-hero">
+            <img id="s2-heroImage" src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=750&h=600&fit=crop&auto=format&q=85" alt="餐厅">
+            <div class="s2-hero-grad"></div>
+
+            <div class="s2-hero-top">
+              <div class="s2-hbtn" onclick="s2GoBack()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+              </div>
+              <div class="s2-hbtn-row">
+                <div class="s2-hbtn" id="s2-favbtn" onclick="s2ToggleFav()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" id="s2-favi"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                </div>
+                <div class="s2-hbtn" onclick="s2OpenSheet('share')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="s2-photo-pill">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span id="s2-photoCount">1 / 14</span>
+            </div>
+
+            <div class="s2-hero-info">
+              <div class="s2-hero-name" id="s2-heroName">沙县小吃<br>东区旗舰店</div>
+              <div class="s2-hero-meta-row">
+                <div class="s2-hero-rating">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#F0B429" stroke="none" class="s2-svg-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span id="s2-heroRating">4.8</span>
+                  <span class="s2-hero-cnt" id="s2-heroReviewCnt">（237条）</span>
+                </div>
+                <div class="s2-hero-sep"></div>
+                <div class="s2-hero-dist">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span id="s2-heroDistance">步行 4 分钟 · 380m</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="s2-status-bar-sticky">
+            <div class="s2-status-item">
+              <div class="s2-status-val s2-sv-green" id="s2-statusOpen">营业中</div>
+              <div class="s2-status-lbl" id="s2-statusOpenTime">至 22:00</div>
+            </div>
+            <div class="s2-status-item">
+              <div class="s2-status-val s2-sv-orange" id="s2-statusWaitTime">约 8 min</div>
+              <div class="s2-status-lbl">当前出餐</div>
+            </div>
+            <div class="s2-status-item">
+              <div class="s2-status-val s2-sv-green" id="s2-statusCrowd">人流低</div>
+              <div class="s2-status-lbl">无需等位</div>
+            </div>
+            <div class="s2-status-item">
+              <div class="s2-status-val s2-sv-ink" id="s2-statusPrice">¥22</div>
+              <div class="s2-status-lbl">人均</div>
+            </div>
+          </div>
+
+          <div class="s2-ai-decision">
+            <div class="s2-ai-badge-row">
+              <div class="s2-ai-dot"></div>
+              <span class="s2-ai-badge-text">AI 实时判断</span>
+            </div>
+            <div class="s2-ai-verdict" id="s2-aiVerdict">
+              现在去是<strong>今天最佳时段</strong>，已过午高峰，当前等位为零。按你"两节课间隙"的需求，全程预计 <strong>15 分钟内</strong>可完成。
+            </div>
+            <div class="s2-ai-verdict-sub">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              基于今日 <span id="s2-aiFeedbackCount">38</span> 条实时到店反馈 · <span id="s2-aiUpdateTime">3 分钟前更新</span>
+            </div>
+          </div>
+
+          <div class="s2-body">
+
+            <div class="s2-section">
+              <div class="s2-sec-label">选择你的场景，查看专属口碑</div>
+              <div class="s2-scene-row" id="s2-sceneRow">
+                <div class="s2-scene-pill active" onclick="s2SetScene(this,'flash')">
+                  <div class="s2-sp-name">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    两节课间隙
+                  </div>
+                  <div class="s2-sp-bar-wrap"><div class="s2-sp-bar s2-bar-gr" style="width:95%"></div></div>
+                  <div class="s2-sp-val">94% 满意</div>
+                </div>
+                <div class="s2-scene-pill" onclick="s2SetScene(this,'money')">
+                  <div class="s2-sp-name">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    月底省钱
+                  </div>
+                  <div class="s2-sp-bar-wrap"><div class="s2-sp-bar s2-bar-gr" style="width:88%"></div></div>
+                  <div class="s2-sp-val">88% 满意</div>
+                </div>
+                <div class="s2-scene-pill" onclick="s2SetScene(this,'study')">
+                  <div class="s2-sp-name">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                    考前续命
+                  </div>
+                  <div class="s2-sp-bar-wrap"><div class="s2-sp-bar s2-bar-or" style="width:71%"></div></div>
+                  <div class="s2-sp-val">71% 满意</div>
+                </div>
+                <div class="s2-scene-pill" onclick="s2SetScene(this,'date')">
+                  <div class="s2-sp-name">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                    约会
+                  </div>
+                  <div class="s2-sp-bar-wrap"><div class="s2-sp-bar s2-bar-yl" style="width:48%"></div></div>
+                  <div class="s2-sp-val">48% 满意</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="s2-section">
+              <div class="s2-sec-label" id="s2-opinionLabel">237 条同学评价提炼</div>
+
+              <div class="s2-opinion-lead" id="s2-opinionLead">
+                针对<strong>两节课间隙</strong>场景，同学评价高度一致：出餐速度是最大优势，几乎没有踩雷案例。唯一需要注意的是周五晚上。
+              </div>
+
+              <div class="s2-kw-list">
+                <div class="s2-kw-row">
+                  <div class="s2-kw-name">出餐快</div>
+                  <div class="s2-kw-track"><div class="s2-kw-fill s2-kf-pos" style="width:89%"></div></div>
+                  <div class="s2-kw-cnt">89 人</div>
+                </div>
+                <div class="s2-kw-row">
+                  <div class="s2-kw-name">分量足</div>
+                  <div class="s2-kw-track"><div class="s2-kw-fill s2-kf-pos" style="width:74%"></div></div>
+                  <div class="s2-kw-cnt">74 人</div>
+                </div>
+                <div class="s2-kw-row">
+                  <div class="s2-kw-name">性价比高</div>
+                  <div class="s2-kw-track"><div class="s2-kw-fill s2-kf-pos" style="width:61%"></div></div>
+                  <div class="s2-kw-cnt">61 人</div>
+                </div>
+                <div class="s2-kw-row">
+                  <div class="s2-kw-name">位置宽敞</div>
+                  <div class="s2-kw-track"><div class="s2-kw-fill s2-kf-pos" style="width:45%"></div></div>
+                  <div class="s2-kw-cnt">45 人</div>
+                </div>
+                <div class="s2-kw-row">
+                  <div class="s2-kw-name">周五高峰慢</div>
+                  <div class="s2-kw-track"><div class="s2-kw-fill s2-kf-warn" style="width:34%"></div></div>
+                  <div class="s2-kw-cnt">34 人</div>
+                </div>
+              </div>
+
+              <div class="s2-caveat-row">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F0B429" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div class="s2-caveat-text">
+                  34 位同学提到周五晚（18:00–20:00）等位较长，今天是周三，<span>可放心前往。</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="s2-section">
+              <div class="s2-sec-label">今日人流 · 找准最佳时段</div>
+              <div class="s2-peak-chart" id="s2-peakChart"></div>
+              <div class="s2-peak-legend">
+                <div class="s2-legend-item"><div class="s2-legend-dot" style="background:rgba(42,174,122,.4)"></div>空闲</div>
+                <div class="s2-legend-item"><div class="s2-legend-dot" style="background:rgba(240,180,41,.55)"></div>较忙</div>
+                <div class="s2-legend-item"><div class="s2-legend-dot" style="background:rgba(232,68,58,.45)"></div>高峰</div>
+                <div class="s2-legend-item"><div class="s2-legend-dot" style="background:var(--orange)"></div>现在</div>
+              </div>
+            </div>
+
+            <div class="s2-section">
+              <div class="s2-sec-label">今日特别提示</div>
+              <div class="s2-today-list" id="s2-todayNoticeList">
+                <div class="s2-today-item">
+                  <div class="s2-today-dot s2-td-green"></div>
+                  蒸饺今日进了新鲜食材，多位同学反馈皮薄汤足，强烈推荐
+                </div>
+                <div class="s2-today-item">
+                  <div class="s2-today-dot s2-td-red"></div>
+                  番茄蛋汤今日已售完，可改点酸辣汤
+                </div>
+                <div class="s2-today-item">
+                  <div class="s2-today-dot s2-td-or"></div>
+                  下午 15:00–17:00 是今日最空档期，出餐速度最快
+                </div>
+              </div>
+            </div>
+
+            <div class="s2-section">
+              <div class="s2-sec-label">今天点什么</div>
+
+              <div class="s2-order-scene">
+                <div class="s2-order-scene-label">
+                  <div class="s2-scene-icon s2-si-or">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  </div>
+                  两节课间隙 · 快速方案
+                </div>
+                <div class="s2-order-reco">
+                  <div class="s2-order-dish">拌面 + 蒸饺</div>
+                  <div class="s2-order-price">¥19</div>
+                </div>
+                <div class="s2-order-note">12 分钟内搞定，最高频组合，86 位同学本月点过</div>
+              </div>
+
+              <div style="height:1px;background:var(--div);margin:14px 0"></div>
+
+              <div class="s2-order-scene">
+                <div class="s2-order-scene-label">
+                  <div class="s2-scene-icon s2-si-gr">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                  </div>
+                  月底省钱 · 最划算
+                </div>
+                <div class="s2-order-reco">
+                  <div class="s2-order-dish">炒饭套餐</div>
+                  <div class="s2-order-price">¥15</div>
+                </div>
+                <div class="s2-order-note">含饮料，性价比天花板，月底必点</div>
+              </div>
+
+              <div style="height:1px;background:var(--div);margin:14px 0"></div>
+
+              <div class="s2-order-scene">
+                <div class="s2-order-scene-label">
+                  <div class="s2-scene-icon s2-si-yl">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#846000" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                  </div>
+                  多人聚餐 · 大桌推荐
+                </div>
+                <div class="s2-order-reco">
+                  <div class="s2-order-dish">沙县拼盘 + 人手一汤</div>
+                  <div class="s2-order-price">¥22/人</div>
+                </div>
+                <div class="s2-order-note">拼盘可四人共享，点汤各取所需，不需要对着菜单猜</div>
+              </div>
+            </div>
+
+            <div class="s2-section">
+              <div class="s2-sec-label">同学说 · 校园认证评价</div>
+              <div class="s2-reviews-list" id="s2-reviewsList"></div>
+              <div class="s2-load-more" onclick="s2LoadMoreReviews()">
+                查看全部 <span id="s2-totalReviewCount">237</span> 条评价
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="s2-bottom-cta">
+        <div class="s2-cta-hint">
+          <div class="s2-hint-dot"></div>
+          <span id="s2-ctaHint">当前人流低 · 现在去预计 15 分钟内完成</span>
+        </div>
+        <div class="s2-cta-buttons">
+          <div class="s2-cta-sec" onclick="s2OpenSheet('save')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            收藏
+          </div>
+          <div class="s2-cta-sec" onclick="s2OpenSheet('share')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            分享
+          </div>
+          <div class="s2-cta-pri" onclick="s2NavigateToRestaurant()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            立即导航
+          </div>
+        </div>
+      </div>
+
+      <div class="s2-sheet-overlay" id="s2-shareSheet" onclick="s2CloseSheet('share')">
+        <div class="s2-sheet" onclick="event.stopPropagation()">
+          <div class="s2-sheet-handle"></div>
+          <div class="s2-sheet-title">分享给朋友</div>
+          <div class="s2-sheet-sub">带上当前实时状态，朋友一眼就能决定要不要来</div>
+          <div class="s2-share-preview" id="s2-sharePreview">
+            <b>沙县小吃（东区店）现在人不多，去吃？</b><br>
+            当前状态：无需等位 · 约8分钟出餐<br>
+            人均 ¥22 · 步行4分钟
+          </div>
+          <div class="s2-share-actions">
+            <div class="s2-share-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              发到微信 / QQ
+            </div>
+            <div class="s2-share-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              生成截图分享
+            </div>
+            <div class="s2-share-btn" onclick="s2CopyLink()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              复制链接
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="s2-sheet-overlay" id="s2-saveSheet" onclick="s2CloseSheet('save')">
+        <div class="s2-sheet" onclick="event.stopPropagation()">
+          <div class="s2-sheet-handle"></div>
+          <div class="s2-sheet-title">收藏到场景夹</div>
+          <div class="s2-sheet-sub">下次有相同需求时可以直接找到</div>
+          <div class="s2-save-list" id="s2-saveList">
+            <div class="s2-save-item selected" onclick="s2ToggleSave(this)">
+              <div class="s2-save-icon" style="background:var(--orange-pale)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+              <div class="s2-save-name">两节课间隙</div>
+              <div class="s2-save-cnt">12 家</div>
+              <div class="s2-check-circle">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="s2-save-item" onclick="s2ToggleSave(this)">
+              <div class="s2-save-icon" style="background:rgba(42,174,122,.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+              <div class="s2-save-name">月底省钱</div>
+              <div class="s2-save-cnt">8 家</div>
+              <div class="s2-check-circle"></div>
+            </div>
+            <div class="s2-save-item" onclick="s2ToggleSave(this)">
+              <div class="s2-save-icon" style="background:rgba(240,180,41,.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#846000" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+              <div class="s2-save-name">多人聚餐</div>
+              <div class="s2-save-cnt">5 家</div>
+              <div class="s2-check-circle"></div>
+            </div>
+            <div class="s2-save-item" onclick="s2ToggleSave(this)">
+              <div class="s2-save-icon" style="background:rgba(61,136,217,.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+              <div class="s2-save-name">约会小聚</div>
+              <div class="s2-save-cnt">6 家</div>
+              <div class="s2-check-circle"></div>
+            </div>
+          </div>
+          <button class="s2-sheet-confirm" onclick="s2ConfirmSave()">确认收藏</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         S3 · EXPLORE
+    ════════════════════════════════ -->
+    <div class="screen s3 off" id="s3">
+      <div class="status">
+        <span class="status-time">9:41</span>
+        <div class="status-right"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x=".5" y=".5" width="18" height="11" rx="2.5" stroke="var(--ink)" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="9" rx="1.5" fill="var(--ink)"/><path d="M20 4v4a2 2 0 000-4z" fill="var(--ink)" opacity=".4"/></svg></div>
+      </div>
+
+      <div class="s3-header">
+        <div class="s3-title">跨校联盟探索</div>
+        <div class="s3-sub">发现周边各高校的宝藏餐厅</div>
+      </div>
+
+      <div class="cam-scroll">
+        <div class="cam-row" id="campus-buttons">
+          <div class="cam-btn on" data-school="天津财大">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            天津财大
+          </div>
+          <div class="cam-btn" data-school="天津科大">天津科大</div>
+          <div class="cam-btn" data-school="天津师大">天津师大</div>
+          <div class="cam-btn" data-school="天职师大">天职师大</div>
+          <div class="cam-btn" data-school="天津医大">天津医大</div>
+        </div>
+      </div>
+
+      <div class="ring-card-enhanced">
+        <div class="ring-map-enhanced" id="ring-map-enhanced">
+          <div class="ring-grid"></div>
+          
+          <!-- 距离环 -->
+          <div class="ring-path-line ring-path-1"></div>
+          <div class="ring-path-line ring-path-2"></div>
+          <div class="ring-path-line ring-path-3"></div>
+          
+          <!-- 中心建筑 -->
+          <div class="ring-center-enhanced">
+            <div class="center-building">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+          </div>
+          
+          <!-- 学校标记点 -->
+          <div class="school-pin-enhanced sp-blue" style="top:18%;left:62%" data-school="天津科大" onclick="handleSchoolPinClick('天津科大')" id="pin-tjkd">
+            <div class="school-pin-dot"></div>
+            天津科大
+          </div>
+          <div class="school-pin-enhanced sp-purple" style="top:65%;left:15%" data-school="天津师大" onclick="handleSchoolPinClick('天津师大')" id="pin-tjsd">
+            <div class="school-pin-dot"></div>
+            天津师大
+          </div>
+          <div class="school-pin-enhanced sp-green" style="top:45%;left:75%" data-school="天职师大" onclick="handleSchoolPinClick('天职师大')" id="pin-tzsd">
+            <div class="school-pin-dot"></div>
+            天职师大
+          </div>
+          <div class="school-pin-enhanced" style="top:25%;left:20%;background:linear-gradient(135deg,var(--red),#F97366)" data-school="天津医大" onclick="handleSchoolPinClick('天津医大')" id="pin-tjyd">
+            <div class="school-pin-dot"></div>
+            天津医大
+          </div>
+          
+          <!-- 动态路线 -->
+          <div class="route-line" id="route-tjkd" style="transform:rotate(35deg);width:100px;"></div>
+          <div class="route-line" id="route-tjsd" style="transform:rotate(-130deg);width:120px;"></div>
+          <div class="route-line" id="route-tzsd" style="transform:rotate(55deg);width:140px;"></div>
+          <div class="route-line" id="route-tjyd" style="transform:rotate(-160deg);width:90px;"></div>
+        </div>
+        
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="heat-indicator">
+            <span>区域热度：</span>
+            <div class="heat-dot" style="background:var(--green)"></div>
+            <div class="heat-dot" style="background:var(--yellow)"></div>
+            <div class="heat-dot" style="background:var(--red)"></div>
+          </div>
+        </div>
+        
+        <div class="ring-legend">
+          <div class="ring-leg-item">
+            <div class="ring-leg-line"></div>
+            步行10分钟
+          </div>
+          <div class="ring-leg-item">
+            <div class="ring-leg-line" style="opacity:.55"></div>
+            骑行15分钟
+          </div>
+          <div class="ring-leg-item">
+            <div class="ring-leg-line" style="opacity:.28"></div>
+            骑行25分钟
+          </div>
+        </div>
+      </div>
+
+      <div class="new-stu-banner" onclick="handleFreshmanBannerClick()">
+        <div class="nsb-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div class="nsb-text">
+          <div class="nsb-title">新生必吃清单</div>
+          <div class="nsb-sub">入学前100天必打卡的36家</div>
+        </div>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <div class="sec-head">
+        <div class="sec-title">本周跨校热榜</div>
+        <div class="sec-more">更多<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="rank-list" id="rank-list">
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         S4 · PROFILE
+    ════════════════════════════════ -->
+    <div class="screen s4 off" id="s4">
+      <div class="status">
+        <span class="status-time">9:41</span>
+        <div class="status-right"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x=".5" y=".5" width="18" height="11" rx="2.5" stroke="var(--ink)" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="9" rx="1.5" fill="var(--ink)"/><path d="M20 4v4a2 2 0 000-4z" fill="var(--ink)" opacity=".4"/></svg></div>
+      </div>
+
+      <div class="s4-header">
+        <div class="profile-row">
+          <div class="profile-avatar">邹</div>
+          <div>
+            <div class="profile-name">邹明琪</div>
+            <div class="profile-school">
+              天津财经大学 · 数据管理专业
+              <span class="verified">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                已认证
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-c"><div class="stat-n">47</div><div class="stat-l">打卡餐厅</div></div>
+        <div class="stat-c"><div class="stat-n">23</div><div class="stat-l">发布评价</div></div>
+        <div class="stat-c"><div class="stat-n">168</div><div class="stat-l">获感谢</div></div>
+        <div class="stat-c"><div class="stat-n">12</div><div class="stat-l">收藏夹</div></div>
+      </div>
+
+      <div class="level-card">
+        <div class="lv-row">
+          <div>
+            <div class="lv-label">当前等级</div>
+            <div class="lv-name">美食达人 Lv.4</div>
+          </div>
+          <div class="lv-icon">
+            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="var(--orange-2)" stroke-width="1.6"><path d="M12 15l-3.09 1.63.59-3.44L7 11.11l3.45-.5L12 7.5l1.55 3.11 3.45.5-2.5 2.44.59 3.44L12 15z"/><path d="M5 3h14l1 5H4z"/><path d="M4 8c0 8 8 13 8 13s8-5 8-13"/></svg>
+          </div>
+        </div>
+        <div class="lv-bar-wrap"><div class="lv-bar"></div></div>
+        <div class="lv-bar-txt">距 Lv.5 还需 <span>32 次打卡</span>，解锁「吃货大师」称号</div>
+      </div>
+
+      <div class="sec-head">
+        <div class="sec-title">我的美食足迹</div>
+        <div class="sec-more">查看全部<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <div class="map-preview-card" onclick="go(3)">
+        <div class="map-preview-img">
+          <div class="mp-grid"></div>
+          <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 335 100" fill="none">
+            <circle cx="80" cy="35" r="5" fill="var(--orange)" opacity=".7"/>
+            <circle cx="160" cy="60" r="5" fill="var(--orange)" opacity=".7"/>
+            <circle cx="220" cy="28" r="5" fill="var(--orange)" opacity=".7"/>
+            <circle cx="290" cy="55" r="5" fill="var(--orange)" opacity=".7"/>
+            <circle cx="120" cy="75" r="5" fill="var(--orange)" opacity=".7"/>
+            <line x1="80" y1="35" x2="120" y2="75" stroke="var(--orange)" stroke-width="1" opacity=".25" stroke-dasharray="4 3"/>
+            <line x1="120" y1="75" x2="160" y2="60" stroke="var(--orange)" stroke-width="1" opacity=".25" stroke-dasharray="4 3"/>
+            <line x1="160" y1="60" x2="220" y2="28" stroke="var(--orange)" stroke-width="1" opacity=".25" stroke-dasharray="4 3"/>
+            <line x1="220" y1="28" x2="290" y2="55" stroke="var(--orange)" stroke-width="1" opacity=".25" stroke-dasharray="4 3"/>
+          </svg>
+        </div>
+        <div class="map-preview-foot">
+          <div><div class="mpf-title">已探索 47 家</div><div class="mpf-sub">覆盖 3 所大学周边</div></div>
+          <div class="mpf-cta">展开地图</div>
+        </div>
+      </div>
+
+      <div class="sec-head"><div class="sec-title">最近打卡</div></div>
+
+      <div class="hist-list">
+        <div class="hist-item">
+          <div class="hist-thumb" style="background: url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop') center/cover;"></div>
+          <div><div class="hist-name">沙县小吃（东区店）</div><div class="hist-meta">今天 · 华南理工</div></div>
+          <div class="hist-rating"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>5.0</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-thumb" style="background: url('https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop') center/cover;"></div>
+          <div><div class="hist-name">张记肠粉</div><div class="hist-meta">昨天 · 暨大西门</div></div>
+          <div class="hist-rating"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>5.0</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-thumb" style="background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop') center/cover;"></div>
+          <div><div class="hist-name">森林咖啡馆</div><div class="hist-meta">3天前 · 华理周边</div></div>
+          <div class="hist-rating"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         S5 · RESTAURANT LIST
+    ════════════════════════════════ -->
+    <div class="screen s5 off" id="s5">
+      <div class="status">
+        <span class="status-time">9:41</span>
+        <div class="status-right">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--ink)"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x=".5" y=".5" width="18" height="11" rx="2.5" stroke="var(--ink)" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="9" rx="1.5" fill="var(--ink)"/><path d="M20 4v4a2 2 0 000-4z" fill="var(--ink)" opacity=".4"/></svg>
+        </div>
+      </div>
+
+      <div class="s5-header" style="display:flex;align-items:center;gap:12px">
+        <div class="detail-btn btn-back" onclick="goBack()" style="position:static;box-shadow:none;background:var(--white);width:34px;height:34px">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <div>
+          <div class="s5-title">全部餐厅</div>
+          <div class="s5-sub">发现校园周边的美食</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-chip sel">全部</div>
+        <div class="filter-chip">快餐速食</div>
+        <div class="filter-chip">性价比高</div>
+        <div class="filter-chip">约会聚餐</div>
+        <div class="filter-chip">深夜食堂</div>
+        <div class="filter-chip">轻食咖啡</div>
+      </div>
+
+      <div class="restaurant-grid">
+        <div class="rcard" onclick="go(2)">
+          <div class="rcard-img" style="background: url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop') center/cover;">
+            <div class="rcard-scene-tag">快餐</div>
+            <div class="rcard-hot-tag">
+              <svg width="8" height="10" viewBox="0 0 12 16" fill="white"><path d="M8.5 0C7 4 5 5 5 8a3 3 0 006 0c0-1-.5-2-1-3 0 0-1 1-1.5.5C9.5 4 9.5 2 8.5 0z"/></svg>
+              热
+            </div>
+          </div>
+          <div class="rcard-body">
+            <div class="rcard-name">沙县小吃（东区店）</div>
+            <div class="rcard-meta">
+              <div class="rating">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                4.8
+              </div>
+              <div class="sep"></div>
+              <span class="dist-text">380米</span>
+            </div>
+            <div class="rcard-bottom">
+              <span class="price-text">¥22<span class="price-unit">/人</span></span>
+              <span class="speed-pill sp-green">
+                <svg width="8" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                8分钟
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard" onclick="go(2)">
+          <div class="rcard-img" style="background: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop') center/cover;">
+            <div class="rcard-scene-tag">健康</div>
+          </div>
+          <div class="rcard-body">
+            <div class="rcard-name">绿食沙拉工厂</div>
+            <div class="rcard-meta">
+              <div class="rating"><svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.6</div>
+              <div class="sep"></div><span class="dist-text">520米</span>
+            </div>
+            <div class="rcard-bottom">
+              <span class="price-text">¥28<span class="price-unit">/人</span></span>
+              <span class="speed-pill sp-green"><svg width="8" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>6分钟</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard" onclick="go(2)">
+          <div class="rcard-img" style="background: url('https://images.unsplash.com/photo-1579027989536-b96d40992fda?w=400&h=300&fit=crop') center/cover;">
+            <div class="rcard-scene-tag">约会</div>
+          </div>
+          <div class="rcard-body">
+            <div class="rcard-name">浅木日式料理</div>
+            <div class="rcard-meta">
+              <div class="rating"><svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.9</div>
+              <div class="sep"></div><span class="dist-text">1.2km</span>
+            </div>
+            <div class="rcard-bottom">
+              <span class="price-text">¥68<span class="price-unit">/人</span></span>
+              <span class="speed-pill sp-purple">氛围餐厅</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard" onclick="go(2)">
+          <div class="rcard-img" style="background: url('https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&h=300&fit=crop') center/cover;">
+            <div class="rcard-scene-tag">夜宵</div>
+          </div>
+          <div class="rcard-body">
+            <div class="rcard-name">老友记煲仔饭</div>
+            <div class="rcard-meta">
+              <div class="rating"><svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.7</div>
+              <div class="sep"></div><span class="dist-text">680米</span>
+            </div>
+            <div class="rcard-bottom">
+              <span class="price-text">¥35<span class="price-unit">/人</span></span>
+              <span class="speed-pill sp-yellow">至凌晨</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard" onclick="go(2)">
+          <div class="rcard-img" style="background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop') center/cover;">
+            <div class="rcard-scene-tag">咖啡</div>
+          </div>
+          <div class="rcard-body">
+            <div class="rcard-name">森林咖啡馆</div>
+            <div class="rcard-meta">
+              <div class="rating"><svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.8</div>
+              <div class="sep"></div><span class="dist-text">900米</span>
+            </div>
+            <div class="rcard-bottom">
+              <span class="price-text">¥32<span class="price-unit">/人</span></span>
+              <span class="speed-pill sp-green">可久坐</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard" onclick="go(2)">
+          <div class="rcard-img" style="background: url('https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop') center/cover;">
+            <div class="rcard-scene-tag">早餐</div>
+          </div>
+          <div class="rcard-body">
+            <div class="rcard-name">张记肠粉（暨大西门）</div>
+            <div class="rcard-meta">
+              <div class="rating"><svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.9</div>
+              <div class="sep"></div><span class="dist-text">1.8km</span>
+            </div>
+            <div class="rcard-bottom">
+              <span class="price-text">¥18<span class="price-unit">/人</span></span>
+              <span class="speed-pill sp-green">6分钟</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bnav">
+      <div class="bnav-item on" id="b0" onclick="go(0)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="bnav-label">首页</span>
+        <div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" id="b1" onclick="go(1)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.22-7.78-1.42 1.42M7.64 16.36l-1.42 1.42M16.36 16.36l1.42 1.42M5.64 7.64 7.06 9.06"/></svg>
+        <span class="bnav-label">AI 助手</span>
+        <div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" id="b2" onclick="go(5)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span class="bnav-label">餐厅</span>
+        <div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" id="b3" onclick="go(3)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M3 9l4 2m14-2l-4 2m-10 0v10m10-10v10"/></svg>
+        <span class="bnav-label">探索</span>
+        <div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" id="b4" onclick="go(4)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="bnav-label">我的</span>
+        <div class="bnav-dot"></div>
+      </div>
+    </nav>
+
+    <!-- FAB -->
+    <div class="fab" id="fab" onclick="go(1)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.22-7.78-1.42 1.42M7.64 16.36l-1.42 1.42M16.36 16.36l1.42 1.42M5.64 7.64 7.06 9.06"/></svg>
+    </div>
+
+    <!-- 校园认证弹窗 -->
+    <div class="verify-modal" id="verify-modal">
+      <div class="verify-card">
+        <div class="verify-header">
+          <div class="verify-title">校园邮箱认证</div>
+          <div class="verify-close" onclick="closeVerifyModal()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+        </div>
+        <div class="verify-steps">
+          <div class="verify-step">
+            <div class="verify-step-num">1</div>
+            <div class="verify-step-text">
+              <div class="verify-step-title">输入邮箱</div>
+              <div class="verify-step-desc">使用学校邮箱登录，如xxx@tju.edu.cn</div>
+            </div>
+          </div>
+          <div class="verify-step">
+            <div class="verify-step-num">2</div>
+            <div class="verify-step-text">
+              <div class="verify-step-title">点击验证</div>
+              <div class="verify-step-desc">系统自动验证邮箱有效性</div>
+            </div>
+          </div>
+          <div class="verify-step">
+            <div class="verify-step-num">3</div>
+            <div class="verify-step-text">
+              <div class="verify-step-title">获得标识</div>
+              <div class="verify-step-desc">评价显示"已认证"标识，更可信</div>
+            </div>
+          </div>
+        </div>
+        <button class="verify-cta" onclick="verifyEmail()">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          立即认证
+        </button>
+      </div>
+    </div>
+
+    </div><!-- phone-inner -->
+  </div><!-- phone -->
+</div><!-- phone-wrap -->
+
+<!-- RIGHT ANNOTATIONS -->
+<div class="ann-col right show" id="ann-right">
+</div>
+
+<script>
+const labels = ['首页地图','AI 助手','餐厅详情','跨校探索','个人中心','餐厅列表'];
+let cur = 0;
+let pageHistory = [0];
+let currentRestaurant = 0;
+
+// 餐厅数据
+const restaurants = [
+  {
+    id: 0,
+    name: '沙县小吃（东区店）',
+    category: '快餐速食',
+    rating: 4.8,
+    distance: '380米',
+    price: 22,
+    speed: '8分钟',
+    speedSource: '基于最近30条订单计算',
+    image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=500&fit=crop',
+    school: '天津财大',
+    walkTime: '4分钟',
+    reviews: 237,
+    tags: ['快餐速食', '学生优惠', '出餐快', '可打包'],
+    summary: '综合 237 条同学评价：以出餐速度快、性价比高著称，拌面和炒饭为热门单品。周五晚高峰期等位约 15 分钟，其他时段基本即点即出。',
+    realtimeStatus: {
+      crowd: 'low',
+      crowdText: '人流低谷',
+      waitTime: 5,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '李同学', school: '天津财大', rating: 5, text: '两节课间隙去的，点了拌面和蒸饺，6分钟就好了，分量很足，吃完刚好来得及上课。', date: '3天前 · 本月第2次消费' },
+      { name: '张同学', school: '天津财大', rating: 4, text: '性价比确实高，但是周五晚人很多，建议早点去。蒸饺很不错，值得推荐！', date: '上周 · 同学聚餐' }
+    ]
+  },
+  {
+    id: 1,
+    name: '张记肠粉（科大店）',
+    category: '快餐速食',
+    rating: 4.9,
+    distance: '1.8km',
+    price: 18,
+    speed: '6分钟',
+    speedSource: '基于最近25条订单计算',
+    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&h=500&fit=crop',
+    school: '天津科技大学',
+    walkTime: '骑行12分钟',
+    reviews: 345,
+    tags: ['快餐速食', '肠粉', '跨校推荐', '性价比高'],
+    summary: '天津科技大学周边的人气早餐店，肠粉嫩滑，酱汁鲜美。很多财大同学专门骑单车过来吃，值得一试！',
+    realtimeStatus: {
+      crowd: 'medium',
+      crowdText: '人流适中',
+      waitTime: 10,
+      isBusy: false,
+      soldOutItems: ['鸡蛋肠粉'],
+      recommendedTime: '10分钟后去更好'
+    },
+    userReviews: [
+      { name: '冯同学', school: '天津科技大学', rating: 5, text: '吃了四年的店！肠粉超级嫩滑，酱汁是灵魂！每次有朋友来都带他们来吃。', date: '5天前 · 早餐打卡' },
+      { name: '何同学', school: '天津财大', rating: 5, text: '专门骑单车过来吃的，真的值得！肠粉太好吃了，就是有点远。', date: '上周 · 跨校觅食' }
+    ]
+  },
+  {
+    id: 2,
+    name: '老北京炸酱面',
+    category: '快餐速食',
+    rating: 4.5,
+    distance: '450米',
+    price: 25,
+    speed: '10分钟',
+    speedSource: '基于最近20条订单计算',
+    image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=500&fit=crop',
+    school: '天津财大',
+    walkTime: '6分钟',
+    reviews: 167,
+    tags: ['快餐速食', '北京味', '分量足', '实惠'],
+    summary: '地道的老北京炸酱面，酱香浓郁，面条筋道。配料丰富，分量很足，适合喜欢面食的同学。',
+    realtimeStatus: {
+      crowd: 'low',
+      crowdText: '人流低谷',
+      waitTime: 8,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '许同学', school: '天津财大', rating: 5, text: '作为北京人，终于找到家乡的味道了！炸酱很正宗，面条筋道，强烈推荐！', date: '今天 · 解乡愁' },
+      { name: '蒋同学', school: '天津财大', rating: 4, text: '分量很足，男生也能吃饱。就是炸酱有点咸，建议少加一点。', date: '3天前 · 午餐' }
+    ]
+  },
+  {
+    id: 3,
+    name: '麦香烘焙坊',
+    category: '性价比高',
+    rating: 4.8,
+    distance: '320米',
+    price: 20,
+    speed: '现烤现卖',
+    speedSource: '基于最近40条订单计算',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&h=500&fit=crop',
+    school: '天津财大',
+    walkTime: '4分钟',
+    reviews: 289,
+    tags: ['性价比高', '面包', '下午茶', '新鲜'],
+    summary: '学校附近人气最高的烘焙坊，面包新鲜出炉，香气四溢。蛋挞和泡芙是招牌，适合当下午茶。',
+    realtimeStatus: {
+      crowd: 'high',
+      crowdText: '人流高峰',
+      waitTime: 15,
+      isBusy: true,
+      soldOutItems: ['芝士蛋挞', '草莓泡芙'],
+      recommendedTime: '17:30后去更好'
+    },
+    userReviews: [
+      { name: '杨同学', school: '天津财大', rating: 5, text: '每天下课都要来买！蛋挞刚出炉的时候超级好吃，泡芙也很棒！', date: '今天 · 下午茶' },
+      { name: '朱同学', school: '天津财大', rating: 5, text: '面包都很新鲜，价格也不贵。早餐经常在这里买，强烈推荐！', date: '4天前 · 早餐' }
+    ]
+  },
+  {
+    id: 4,
+    name: '绿食沙拉工厂',
+    category: '性价比高',
+    rating: 4.6,
+    distance: '520米',
+    price: 28,
+    speed: '6分钟',
+    speedSource: '基于最近18条订单计算',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=500&fit=crop',
+    school: '天津财大',
+    walkTime: '7分钟',
+    reviews: 189,
+    tags: ['性价比高', '轻食', '低卡', '健身餐'],
+    summary: '健康轻食首选，沙拉新鲜，搭配均衡。适合健身和注重健康的同学，环境安静，适合看书学习。',
+    realtimeStatus: {
+      crowd: 'low',
+      crowdText: '人流低谷',
+      waitTime: 3,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '刘同学', school: '天津财大', rating: 5, text: '减肥期间的救星！沙拉分量足，食材新鲜，鸡胸肉很嫩。已经连续吃了一周了。', date: '2天前 · 健身打卡' },
+      { name: '陈同学', school: '天津财大', rating: 4, text: '环境不错，适合安静地吃饭或看书。就是价格稍贵，偶尔吃吃还可以。', date: '上周 · 学习局' }
+    ]
+  },
+  {
+    id: 5,
+    name: '浅木日式料理',
+    category: '约会聚餐',
+    rating: 4.9,
+    distance: '1.2km',
+    price: 68,
+    speed: '氛围餐厅',
+    speedSource: '基于最近15条订单计算',
+    image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800&h=500&fit=crop',
+    school: '天津财大',
+    walkTime: '15分钟',
+    reviews: 312,
+    tags: ['约会聚餐', '日式', '环境好', '需预约'],
+    summary: '氛围极佳的日式料理店，适合约会和庆祝。刺身新鲜，寿司精致，人均稍高但物超所值。',
+    realtimeStatus: {
+      crowd: 'medium',
+      crowdText: '人流适中',
+      waitTime: 20,
+      isBusy: false,
+      soldOutItems: ['三文鱼刺身'],
+      recommendedTime: '建议提前预约'
+    },
+    userReviews: [
+      { name: '王同学', school: '天津财大', rating: 5, text: '纪念日来的，环境超级棒！服务员很贴心，还送了小甜品。寿司很新鲜，强烈推荐！', date: '昨天 · 约会' },
+      { name: '周同学', school: '天津财大', rating: 4, text: '环境确实很好，就是需要提前预约。刺身拼盘很新鲜，但是价格对学生来说有点贵。', date: '上周 · 生日聚餐' }
+    ]
+  },
+  {
+    id: 6,
+    name: '川味小馆',
+    category: '约会聚餐',
+    rating: 4.7,
+    distance: '720米',
+    price: 38,
+    speed: '12分钟',
+    speedSource: '基于最近28条订单计算',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=500&fit=crop',
+    school: '天津职业技术师大',
+    walkTime: '10分钟',
+    reviews: 223,
+    tags: ['约会聚餐', '麻辣', '下饭', '聚餐'],
+    summary: '正宗川菜馆，麻辣鲜香，特别下饭。适合同学聚餐，价格适中，是爱吃辣的同学们的最爱。',
+    realtimeStatus: {
+      crowd: 'medium',
+      crowdText: '人流适中',
+      waitTime: 12,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '沈同学', school: '天津职业技术师大', rating: 5, text: '太好吃了！麻辣香锅超赞，麻婆豆腐也很正宗。是我和室友们的聚餐首选！', date: '昨天 · 寝室聚餐' },
+      { name: '韩同学', school: '天津财大', rating: 4, text: '味道不错，就是有点辣。不能吃辣的同学建议提前说微辣。', date: '上周 · 同学聚会' }
+    ]
+  },
+  {
+    id: 7,
+    name: '潮汕牛肉火锅',
+    category: '约会聚餐',
+    rating: 4.6,
+    distance: '1.5km',
+    price: 55,
+    speed: '食材新鲜',
+    speedSource: '基于最近22条订单计算',
+    image: 'https://images.unsplash.com/photo-1555126634326-3e392919f428?w=800&h=500&fit=crop',
+    school: '天津师范大学',
+    walkTime: '20分钟',
+    reviews: 178,
+    tags: ['约会聚餐', '牛肉', '新鲜', '聚餐'],
+    summary: '正宗潮汕牛肉火锅，牛肉新鲜，汤底鲜美。适合多人聚餐，人均稍高但物有所值。',
+    realtimeStatus: {
+      crowd: 'low',
+      crowdText: '人流低谷',
+      waitTime: 10,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '秦同学', school: '天津师范大学', rating: 5, text: '牛肉超级新鲜！吊龙和匙柄都很好吃，汤底也很鲜。就是距离有点远。', date: '上周 · 生日聚餐' },
+      { name: '尤同学', school: '天津财大', rating: 4, text: '味道不错，就是价格对学生来说有点贵。偶尔吃吃还可以，适合重要场合。', date: '2周前 · 部门聚餐' }
+    ]
+  },
+  {
+    id: 8,
+    name: '老友记煲仔饭',
+    category: '深夜食堂',
+    rating: 4.7,
+    distance: '680米',
+    price: 35,
+    speed: '至凌晨',
+    speedSource: '基于最近35条订单计算',
+    image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&h=500&fit=crop',
+    school: '天津医科大学',
+    walkTime: '9分钟',
+    reviews: 256,
+    tags: ['深夜食堂', '煲仔饭', '夜宵', '锅巴香'],
+    summary: '营业至凌晨的深夜食堂，煲仔饭锅巴香脆，腊味正宗。是夜猫子和复习到深夜的同学们的绝佳选择。',
+    realtimeStatus: {
+      crowd: 'low',
+      crowdText: '人流低谷',
+      waitTime: 12,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '赵同学', school: '天津医科大学', rating: 5, text: '期末复习到深夜，这家店简直是救星！锅巴超香，腊味正宗，而且营业到很晚。', date: '1天前 · 深夜复习' },
+      { name: '孙同学', school: '天津财大', rating: 4, text: '煲仔饭很不错，就是等待时间有点长。建议错开高峰期去，锅巴真的绝了！', date: '上周 · 夜宵' }
+    ]
+  },
+  {
+    id: 9,
+    name: '森林咖啡馆',
+    category: '轻食咖啡',
+    rating: 4.8,
+    distance: '900米',
+    price: 32,
+    speed: '可久坐',
+    speedSource: '基于最近16条订单计算',
+    image: 'https://images.unsplash.com/photo-1445116572660-236099ec97a?w=800&h=500&fit=crop',
+    school: '天津财经大学',
+    walkTime: '12分钟',
+    reviews: 198,
+    tags: ['轻食咖啡', '可久坐', '学习', '安静'],
+    summary: '环境安静舒适的咖啡馆，适合学习和小组讨论。咖啡香醇，甜点精致，提供免费WiFi和插座。',
+    realtimeStatus: {
+      crowd: 'medium',
+      crowdText: '人流适中',
+      waitTime: 5,
+      isBusy: false,
+      soldOutItems: [],
+      recommendedTime: '现在去刚好'
+    },
+    userReviews: [
+      { name: '吴同学', school: '天津财大', rating: 5, text: '写论文的绝佳去处！环境安静，插座多，WiFi稳定。拿铁很好喝，提拉米苏也不错。', date: '4天前 · 写论文' },
+      { name: '郑同学', school: '天津财大', rating: 4, text: '环境很好，适合学习。就是周末人有点多，建议早点去占位置。', date: '上周 · 小组讨论' }
+    ]
+  }
+];
+
+function go(idx, restaurantId = null) {
+  pageHistory.push(cur);
+  
+  document.getElementById('s'+cur).classList.add('off');
+  if (cur < 5) {
+    document.getElementById('b'+cur).classList.remove('on');
+  }
+  document.querySelector('#dots .snd.active')?.classList.remove('active');
+
+  document.getElementById('s'+idx).classList.remove('off');
+  document.getElementById('s'+idx).scrollTop = 0;
+  if (idx < 5) {
+    document.getElementById('b'+idx).classList.add('on');
+  }
+  document.querySelectorAll('#dots .snd')[idx].classList.add('active');
+  document.getElementById('slabel').textContent = labels[idx];
+
+  document.getElementById('fab').style.display = idx === 0 ? 'flex' : 'none';
+  
+  if (restaurantId !== null) {
+    currentRestaurant = restaurantId;
+    updateRestaurantDetail(restaurantId);
+  }
+  
+  cur = idx;
+  
+  let screen = 'home';
+  if (idx === 0) screen = 'home';
+  else if (idx === 1) screen = 'ai';
+  else if (idx === 2) screen = 'detail';
+  else if (idx === 3) screen = 'explore';
+  else if (idx === 4) screen = 'profile';
+  else if (idx === 5) screen = 'list';
+  
+  updateAnnotations(screen);
+}
+
+function goBack() {
+  if (pageHistory.length > 1) {
+    const prevPage = pageHistory.pop();
+    
+    document.getElementById('s'+cur).classList.add('off');
+    if (cur < 5) {
+      document.getElementById('b'+cur).classList.remove('on');
+    }
+    document.querySelector('#dots .snd.active')?.classList.remove('active');
+
+    document.getElementById('s'+prevPage).classList.remove('off');
+    document.getElementById('s'+prevPage).scrollTop = 0;
+    if (prevPage < 5) {
+      document.getElementById('b'+prevPage).classList.add('on');
+    }
+    document.querySelectorAll('#dots .snd')[prevPage].classList.add('active');
+    document.getElementById('slabel').textContent = labels[prevPage];
+
+    document.getElementById('fab').style.display = prevPage === 0 ? 'flex' : 'none';
+    cur = prevPage;
+  } else {
+    go(0);
+  }
+}
+
+function updateRestaurantDetail(id) {
+  const r = restaurants[id];
+  const detailScreen = document.getElementById('s2');
+  
+  detailScreen.querySelector('.detail-hero').style.background = `url('${r.image}') center/cover`;
+  detailScreen.querySelector('.detail-name').textContent = r.name;
+  detailScreen.querySelector('.big-rating').innerHTML = `
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    ${r.rating}
+    <span class="rating-cnt">（${r.reviews}条同学评价）</span>
+  `;
+  
+  const tagsContainer = detailScreen.querySelector('.detail-tags');
+  tagsContainer.innerHTML = r.tags.map(tag => {
+    let colorClass = 'tag-o';
+    if (tag === '健康' || tag === '轻食' || tag === '新鲜' || tag === '轻食咖啡') colorClass = 'tag-g';
+    if (tag === '约会' || tag === '日式' || tag === '咖啡' || tag === '学习' || tag === '约会聚餐') colorClass = 'tag-b';
+    return `<span class="${colorClass}">${tag}</span>`;
+  }).join('');
+  
+  renderRealtimeStatus(r);
+  
+  detailScreen.querySelector('.info-grid').innerHTML = `
+    <div class="info-cell"><div class="info-val o">¥${r.price}</div><div class="info-lbl">人均消费</div></div>
+    <div class="info-cell">
+      <div class="info-val g">${r.speed}</div>
+      <div class="info-lbl">平均出餐</div>
+      ${r.speedSource ? `<div class="speed-source-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>${r.speedSource}</div>` : ''}
+    </div>
+    <div class="info-cell"><div class="info-val">${r.distance}</div><div class="info-lbl">距我位置</div></div>
+    <div class="info-cell"><div class="info-val g" style="font-size:13px">营业中</div><div class="info-lbl">至 22:00</div></div>
+    <div class="info-cell"><div class="info-val o" style="font-size:13px">${r.realtimeStatus?.crowdText || '人流低'}</div><div class="info-lbl">当前状态</div></div>
+    <div class="info-cell"><div class="info-val">94%</div><div class="info-lbl">同学推荐</div></div>
+  `;
+  
+  detailScreen.querySelector('.ai-sum-text').innerHTML = r.summary;
+  detailScreen.querySelector('.hero-badge').innerHTML = `
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    ${r.school} · ${r.walkTime}
+  `;
+  
+  const reviewsContainer = detailScreen.querySelector('.reviews-block');
+  if (r.userReviews) {
+    const avatarColors = ['var(--orange)', 'var(--blue)', 'var(--green)', 'var(--yellow)'];
+    reviewsContainer.innerHTML = r.userReviews.map((review, index) => `
+      <div class="review-item">
+        <div class="rev-head">
+          <div class="rev-avatar" style="background:${avatarColors[index % avatarColors.length]}">${review.name.charAt(0)}</div>
+          <div class="rev-name">${review.name}</div>
+          <span class="rev-school">${review.school}</span>
+          <span class="verified">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            已认证
+          </span>
+        </div>
+        <div class="rev-stars">
+          ${Array.from({length: 5}, (_, i) => 
+            `<svg width="11" height="11" viewBox="0 0 24 24" fill="${i < review.rating ? 'var(--yellow)' : 'var(--muted-2)'}" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+          ).join('')}
+        </div>
+        <div class="rev-text">${review.text}</div>
+        <div class="rev-date">${review.date}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderRealtimeStatus(restaurant) {
+  const status = restaurant.realtimeStatus || {
+    crowd: 'low',
+    crowdText: '人流低谷',
+    waitTime: 5,
+    isBusy: false,
+    soldOutItems: [],
+    recommendedTime: '现在去刚好'
+  };
+  
+  const pill = document.getElementById('realtime-status-pill');
+  const wait = document.getElementById('realtime-wait');
+  const rec = document.getElementById('realtime-rec');
+  const recText = document.getElementById('realtime-recommendation');
+  
+  let pillClass = 'pill-green';
+  let waitClass = 'green';
+  if (status.crowd === 'medium') {
+    pillClass = 'pill-yellow';
+    waitClass = 'orange';
+  } else if (status.crowd === 'high') {
+    pillClass = 'pill-red';
+    waitClass = 'red';
+  }
+  
+  pill.className = `realtime-status-pill ${pillClass}`;
+  pill.innerHTML = `
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="8"/></svg>
+    ${status.crowdText}
+  `;
+  
+  wait.className = `realtime-item-value ${waitClass}`;
+  wait.textContent = `${status.waitTime}分钟`;
+  
+  rec.textContent = status.recommendedTime;
+  
+  recText.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>${status.recommendedTime}，${status.isBusy ? '建议避开高峰' : '可放心前往'}</span>
+  `;
+  
+  const statusCard = document.getElementById('realtime-status-card');
+  const existingSoldOut = statusCard.querySelector('.sold-out-alert');
+  if (existingSoldOut) existingSoldOut.remove();
+  
+  if (status.soldOutItems && status.soldOutItems.length > 0) {
+    const soldOutDiv = document.createElement('div');
+    soldOutDiv.className = 'sold-out-alert';
+    soldOutDiv.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span>已售完：${status.soldOutItems.join('、')}</span>
+    `;
+    statusCard.appendChild(soldOutDiv);
+  }
+}
+
+function renderTodaySpecial() {
+  const hour = new Date().getHours();
+  let recommendedRestaurant;
+  
+  if (hour < 10) {
+    recommendedRestaurant = restaurants.find(r => r.name.includes('肠粉')) || restaurants[1];
+  } else if (hour < 14) {
+    recommendedRestaurant = restaurants[0];
+  } else if (hour < 17) {
+    recommendedRestaurant = restaurants.find(r => r.name.includes('烘焙')) || restaurants[3];
+  } else if (hour < 20) {
+    recommendedRestaurant = restaurants[0];
+  } else {
+    recommendedRestaurant = restaurants.find(r => r.name.includes('煲仔')) || restaurants[8];
+  }
+  
+  const specialEl = document.getElementById('today-special');
+  const nameEl = document.getElementById('today-special-name');
+  const thumbEl = document.getElementById('today-special-thumb');
+  
+  if (specialEl && nameEl && thumbEl) {
+    nameEl.textContent = recommendedRestaurant.name;
+    thumbEl.style.background = `url('${recommendedRestaurant.image.replace('800&h=500', '400&h=300')}') center/cover`;
+    specialEl.onclick = () => go(2, recommendedRestaurant.id);
+  }
+}
+
+function handleSceneChipClick(element, scene) {
+  document.querySelectorAll('.chips-inner .chip').forEach(chip => {
+    chip.classList.remove('chip-sel');
+  });
+  element.classList.add('chip-sel');
+  
+  let category = '全部';
+  if (scene.includes('省钱') || scene.includes('20')) category = '性价比高';
+  else if (scene.includes('约会')) category = '约会聚餐';
+  else if (scene.includes('夜宵')) category = '深夜食堂';
+  else if (scene.includes('咖啡') || scene.includes('续命')) category = '轻食咖啡';
+  else category = '快餐速食';
+  
+  filterRestaurants(category);
+  document.getElementById('s5').querySelector('.s5-title').textContent = scene;
+  document.getElementById('s5').querySelector('.s5-sub').textContent = `为你筛选${scene}相关的餐厅`;
+  go(5);
+}
+
+function shareRestaurant() {
+  const r = restaurants[currentRestaurant];
+  if (navigator.share) {
+    navigator.share({
+      title: `推荐：${r.name}`,
+      text: `我在觅食发现了一家不错的餐厅：${r.name}，人均¥${r.price}，推荐给你！`,
+      url: window.location.href
+    }).catch(err => console.log('分享取消'));
+  } else {
+    alert(`已复制分享链接：${r.name} - 觅食大学城美食地图`);
+  }
+}
+
+function joinTable() {
+  const r = restaurants[currentRestaurant];
+  alert(`拼桌功能：已有3位同学在${r.name}发起拼桌，点击确认加入！`);
+}
+
+function navigateToRestaurant() {
+  const r = restaurants[currentRestaurant];
+  alert(`正在导航到${r.name}...`);
+}
+
+function showVerifyModal() {
+  document.getElementById('verify-modal').classList.add('active');
+}
+
+function closeVerifyModal() {
+  document.getElementById('verify-modal').classList.remove('active');
+}
+
+function verifyEmail() {
+  alert('校园邮箱认证成功！你已获得"已认证"标识。');
+  closeVerifyModal();
+}
+
+/* 地图交互功能 */
+let mapScale = 1;
+
+function zoomIn() {
+  mapScale = Math.min(mapScale + 0.2, 1.5);
+  updateMapScale();
+}
+
+function zoomOut() {
+  mapScale = Math.max(mapScale - 0.2, 0.8);
+  updateMapScale();
+}
+
+function updateMapScale() {
+  const map = document.getElementById('home-map-enhanced');
+  if (map) {
+    const pins = map.querySelectorAll('.map-pin-enhanced');
+    pins.forEach(pin => {
+      pin.style.transform = `scale(${mapScale})`;
+    });
+  }
+}
+
+function toggleMapLayer(element, layer) {
+  document.querySelectorAll('.map-layer-btn').forEach(btn => btn.classList.remove('active'));
+  element.classList.add('active');
+  
+  const map = document.getElementById('home-map-enhanced');
+  const pins = map.querySelectorAll('.map-pin-enhanced');
+  
+  pins.forEach(pin => {
+    const restaurantId = parseInt(pin.dataset.restaurantId);
+    const restaurant = restaurants[restaurantId];
+    
+    if (layer === 'all') {
+      pin.style.display = 'flex';
+    } else if (layer === 'food') {
+      pin.style.display = 'flex';
+    } else if (layer === 'hot') {
+      const isHot = restaurant && (restaurant.rating >= 4.7 || restaurant.reviews > 200);
+      pin.style.display = isHot ? 'flex' : 'none';
+    }
+  });
+}
+
+function handleSchoolPinClickEnhanced(schoolName) {
+  document.querySelectorAll('.school-pin-enhanced').forEach(pin => {
+    pin.classList.remove('active');
+  });
+  
+  const targetPin = document.getElementById(`pin-${schoolName.replace(/\s+/g, '').toLowerCase()}`);
+  if (targetPin) {
+    targetPin.classList.add('active');
+  }
+  
+  handleSchoolPinClick(schoolName);
+}
+
+function initMapPins() {
+  const pins = document.querySelectorAll('.map-pin-enhanced');
+  pins.forEach(pin => {
+    pin.addEventListener('click', function(e) {
+      if (!e.target.closest('.pin-card-enhanced')) return;
+      
+      pins.forEach(p => p.classList.remove('active'));
+      pins.forEach(p => p.querySelector('.pin-card-enhanced')?.classList.remove('active'));
+      
+      this.classList.add('active');
+      this.querySelector('.pin-card-enhanced')?.classList.add('active');
+    });
+  });
+}
+
+function filterRestaurants(category) {
+  const grid = document.querySelector('.restaurant-grid');
+  grid.innerHTML = '';
+  
+  const filtered = category === '全部' 
+    ? restaurants 
+    : restaurants.filter(r => r.category === category || r.tags.includes(category));
+  
+  filtered.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'rcard';
+    card.onclick = () => go(2, r.id);
+    card.innerHTML = `
+      <div class="rcard-img" style="background: url('${r.image.replace('800&h=500', '400&h=300')}') center/cover;">
+        <div class="rcard-scene-tag">${r.category}</div>
+        ${r.id === 0 ? '<div class="rcard-hot-tag"><svg width="8" height="10" viewBox="0 0 12 16" fill="white"><path d="M8.5 0C7 4 5 5 5 8a3 3 0 006 0c0-1-.5-2-1-3 0 0-1 1-1.5.5C9.5 4 9.5 2 8.5 0z"/></svg>热</div>' : ''}
+      </div>
+      <div class="rcard-body">
+        <div class="rcard-name">${r.name}</div>
+        <div class="rcard-meta">
+          <div class="rating">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${r.rating}
+          </div>
+          <div class="sep"></div>
+          <span class="dist-text">${r.distance}</span>
+        </div>
+        <div class="rcard-bottom">
+          <span class="price-text">¥${r.price}<span class="price-unit">/人</span></span>
+          <span class="speed-pill ${r.category === '约会' ? 'sp-purple' : r.category === '夜宵' ? 'sp-yellow' : 'sp-green'}">
+            ${r.category === '约会' ? '氛围餐厅' : r.category === '夜宵' ? '至凌晨' : r.category === '咖啡' ? '可久坐' : r.speed}
+          </span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function toggleFav() {
+  const icon = document.getElementById('favicon');
+  const isFaved = icon.getAttribute('fill') === 'var(--red)';
+  icon.setAttribute('fill', isFaved ? 'none' : 'var(--red)');
+  icon.setAttribute('stroke', isFaved ? 'var(--ink)' : 'var(--red)');
+}
+
+document.querySelectorAll('.tpl-pill').forEach(p => {
+  p.addEventListener('click', function() {
+    document.querySelectorAll('.tpl-pill').forEach(x => x.classList.remove('sel'));
+    this.classList.add('sel');
+  });
+});
+
+function handleSchoolPinClick(schoolName) {
+  document.querySelectorAll('.cam-btn').forEach(x => x.classList.remove('on'));
+  const targetBtn = document.querySelector(`.cam-btn[data-school="${schoolName}"]`);
+  if (targetBtn) {
+    targetBtn.classList.add('on');
+  }
+  updateRankListBySchool(schoolName);
+}
+
+function handleFreshmanBannerClick() {
+  filterRestaurants('全部');
+  go(5);
+}
+
+function updateRankListBySchool(schoolName) {
+  const container = document.getElementById('rank-list');
+  if (!container) return;
+  
+  let filteredRestaurants = [];
+  if (schoolName === '天津财大') {
+    filteredRestaurants = restaurants.filter(r => r.school.includes('天津财经') || r.school === '天津财大');
+  } else if (schoolName === '天津科大') {
+    filteredRestaurants = restaurants.filter(r => r.school === '天津科技大学');
+  } else if (schoolName === '天津师大') {
+    filteredRestaurants = restaurants.filter(r => r.school === '天津师范大学');
+  } else if (schoolName === '天职师大') {
+    filteredRestaurants = restaurants.filter(r => r.school === '天津职业技术师大');
+  } else if (schoolName === '天津医大') {
+    filteredRestaurants = restaurants.filter(r => r.school === '天津医科大学');
+  }
+  
+  if (filteredRestaurants.length === 0) {
+    filteredRestaurants = restaurants;
+  }
+  
+  const rankData = filteredRestaurants.slice(0, 4).map((r, index) => ({
+    restaurant: r.id,
+    votes: 150 + Math.floor(Math.random() * 200)
+  }));
+  
+  container.innerHTML = '';
+  rankData.forEach((item, index) => {
+    const r = restaurants[item.restaurant];
+    const rankItem = document.createElement('div');
+    rankItem.className = 'rank-item';
+    rankItem.onclick = () => {
+      pageHistory = [0, 3];
+      go(2, r.id);
+    };
+    rankItem.innerHTML = `
+      <div class="rank-n ${index === 0 ? 'n1' : index === 1 ? 'n2' : ''}">0${index + 1}</div>
+      <div class="rank-thumb" style="background: url('${r.image.replace('800&h=500', '400&h=300')}') center/cover;"></div>
+      <div class="rank-body">
+        <div class="rank-name">${r.name}</div>
+        <div class="rank-meta">${r.school}周边 · ${r.walkTime}</div>
+      </div>
+      <div class="rank-votes"><div class="rank-num">${item.votes}</div><div class="rank-lbl">同学推荐</div></div>
+    `;
+    container.appendChild(rankItem);
+  });
+}
+
+function initCrossCampusList() {
+  const container = document.getElementById('cross-campus-list');
+  if (!container) return;
+  
+  const crossCampusRestaurants = restaurants.filter(r => r.school !== '天津财大' && r.school !== '天津财经大学').slice(0, 2);
+  
+  crossCampusRestaurants.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'row-card';
+    card.onclick = () => {
+      pageHistory = [0];
+      go(2, r.id);
+    };
+    card.innerHTML = `
+      <div class="row-thumb" style="background: url('${r.image.replace('800&h=500', '400&h=300')}') center/cover;"></div>
+      <div class="row-info">
+        <div class="row-name">${r.name}</div>
+        <div class="row-tags">
+          <span class="tag-o">${r.school}同学推荐</span>
+          <span class="tag-g">${r.walkTime}</span>
+        </div>
+        <div class="row-bottom">
+          <span class="row-price">¥${r.price}/人</span>
+          <span class="row-dist"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${r.distance}</span>
+          <div class="row-rating"><svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${r.rating}</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+document.querySelectorAll('.cam-btn').forEach(b => {
+  b.addEventListener('click', function() {
+    document.querySelectorAll('.cam-btn').forEach(x => x.classList.remove('on'));
+    this.classList.add('on');
+    updateRankListBySchool(this.dataset.school);
+  });
+});
+
+document.querySelectorAll('.filter-chip').forEach(b => {
+  b.addEventListener('click', function() {
+    document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('sel'));
+    this.classList.add('sel');
+    filterRestaurants(this.textContent);
+  });
+});
+
+function initHomeRestaurants() {
+  const container = document.getElementById('home-restaurant-list');
+  if (!container) return;
+  
+  restaurants.slice(0, 4).forEach((r, index) => {
+    const card = document.createElement('div');
+    card.className = 'rcard';
+    card.onclick = () => {
+      pageHistory = [0];
+      go(2, r.id);
+    };
+    card.innerHTML = `
+      <div class="rcard-img" style="background: url('${r.image.replace('800&h=500', '400&h=300')}') center/cover;">
+        <div class="rcard-scene-tag">${r.category}</div>
+        ${index === 0 ? '<div class="rcard-hot-tag"><svg width="8" height="10" viewBox="0 0 12 16" fill="white"><path d="M8.5 0C7 4 5 5 5 8a3 3 0 006 0c0-1-.5-2-1-3 0 0-1 1-1.5.5C9.5 4 9.5 2 8.5 0z"/></svg>热</div>' : ''}
+      </div>
+      <div class="rcard-body">
+        <div class="rcard-name">${r.name}</div>
+        <div class="rcard-meta">
+          <div class="rating">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${r.rating}
+          </div>
+          <div class="sep"></div>
+          <span class="dist-text">${r.distance}</span>
+        </div>
+        <div class="rcard-bottom">
+          <span class="price-text">¥${r.price}<span class="price-unit">/人</span></span>
+          <span class="speed-pill ${r.category === '约会' ? 'sp-purple' : r.category === '夜宵' ? 'sp-yellow' : 'sp-green'}">
+            ${r.category === '约会' ? '氛围餐厅' : r.category === '夜宵' ? '至凌晨' : r.category === '咖啡' ? '可久坐' : r.speed}
+          </span>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function initRankList() {
+  const container = document.getElementById('rank-list');
+  if (!container) return;
+  
+  const rankData = [
+    { restaurant: 5, votes: 312 },
+    { restaurant: 3, votes: 278 },
+    { restaurant: 4, votes: 241 },
+    { restaurant: 2, votes: 198 }
+  ];
+  
+  rankData.forEach((item, index) => {
+    const r = restaurants[item.restaurant];
+    const rankItem = document.createElement('div');
+    rankItem.className = 'rank-item';
+    rankItem.onclick = () => {
+      pageHistory = [0, 3];
+      go(2, r.id);
+    };
+    rankItem.innerHTML = `
+      <div class="rank-n ${index === 0 ? 'n1' : index === 1 ? 'n2' : ''}">0${index + 1}</div>
+      <div class="rank-thumb" style="background: url('${r.image.replace('800&h=500', '400&h=300')}') center/cover;"></div>
+      <div class="rank-body">
+        <div class="rank-name">${r.name}</div>
+        <div class="rank-meta">${r.school}周边 · ${r.walkTime}</div>
+      </div>
+      <div class="rank-votes"><div class="rank-num">${item.votes}</div><div class="rank-lbl">同学推荐</div></div>
+    `;
+    container.appendChild(rankItem);
+  });
+}
+
+function addMessage(text, isMe = false) {
+  const chatBody = document.getElementById('chat-body');
+  if (!chatBody) return;
+  
+  const msgDiv = document.createElement('div');
+  msgDiv.className = isMe ? 'msg-me' : 'msg-ai';
+  
+  if (isMe) {
+    msgDiv.innerHTML = `<div class="bubble-me">${text}</div>`;
+  } else {
+    msgDiv.innerHTML = `
+      <div class="ai-msg-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg></div>
+      <div class="bubble-ai">${text}</div>
+    `;
+  }
+  
+  chatBody.appendChild(msgDiv);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function addAIResults(recommendedRestaurants, extraInfo = '') {
+  const chatBody = document.getElementById('chat-body');
+  if (!chatBody) return;
+  
+  const resultsHTML = recommendedRestaurants.map((r, index) => `
+    <div class="ai-res-item ${index === 0 ? 'top' : ''}" data-restaurant-id="${r.id}">
+      <div class="res-num ${index > 0 ? 'dim' : ''}">${index + 1}</div>
+      <div class="res-body">
+        <div class="res-name">${r.name}</div>
+        <div class="res-sub">出餐约${r.speed} · ¥${r.price}均 · ${r.walkTime} · 94%好评</div>
+      </div>
+      <div class="res-thumb" style="border-radius:8px;background: url('${r.image.replace('800&h=500', '400&h=300')}') center/cover;"></div>
+    </div>
+  `).join('');
+  
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'msg-ai';
+  msgDiv.innerHTML = `
+    <div class="ai-msg-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg></div>
+    <div class="bubble-ai">
+      明白！<b>今天周三，东区人流低谷</b>，符合条件的有${recommendedRestaurants.length}家 —
+      <div class="ai-results">
+        ${resultsHTML}
+      </div>
+      ${extraInfo ? `
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);display:flex;align-items:flex-start;gap:5px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          ${extraInfo}
+        </div>
+      ` : ''}
+    </div>
+  `;
+  
+  chatBody.appendChild(msgDiv);
+  
+  msgDiv.querySelectorAll('.ai-res-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const restaurantId = parseInt(this.dataset.restaurantId);
+      pageHistory = [1];
+      go(2, restaurantId);
+    });
+  });
+  
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function getRecommendations(query) {
+  let recommended = [];
+  let extraInfo = '';
+  
+  if (query.includes('快') || query.includes('间隙') || query.includes('课间')) {
+    recommended = restaurants.filter(r => ['快餐', '早餐', '面食'].includes(r.category)).slice(0, 3);
+    extraInfo = '沙县周五晚高峰等位约+15分钟，今天可放心前往。';
+  } else if (query.includes('省钱') || query.includes('20') || query.includes('月底')) {
+    recommended = restaurants.filter(r => r.price <= 25).slice(0, 3);
+    extraInfo = '月底省钱攻略：这些餐厅性价比超高，学生党首选！';
+  } else if (query.includes('约会') || query.includes('对象')) {
+    recommended = restaurants.filter(r => ['约会', '火锅', '川菜'].includes(r.category)).slice(0, 3);
+    extraInfo = '约会推荐：浅木日式料理需要提前预约哦！';
+  } else if (query.includes('夜宵')) {
+    recommended = restaurants.filter(r => r.category === '夜宵').slice(0, 3);
+    extraInfo = '老友记营业至凌晨，是复习党的深夜食堂！';
+  } else if (query.includes('爸妈') || query.includes('家长')) {
+    recommended = restaurants.filter(r => ['约会', '火锅', '川菜'].includes(r.category)).slice(0, 3);
+    extraInfo = '带家长推荐：环境好、菜品全，让爸妈放心！';
+  } else if (query.includes('咖啡') || query.includes('学习')) {
+    recommended = restaurants.filter(r => r.category === '咖啡').slice(0, 3);
+    extraInfo = '森林咖啡馆插座多、WiFi稳，写论文绝佳去处！';
+  } else {
+    recommended = restaurants.slice(0, 3);
+  }
+  
+  return { recommended, extraInfo };
+}
+
+function handleUserQuery(query) {
+  addMessage(query, true);
+  
+  setTimeout(() => {
+    const { recommended, extraInfo } = getRecommendations(query);
+    addAIResults(recommended, extraInfo);
+  }, 800);
+}
+
+function initAIChat() {
+  const templatePills = document.getElementById('template-pills');
+  if (templatePills) {
+    templatePills.querySelectorAll('.tpl-pill').forEach(pill => {
+      pill.addEventListener('click', function() {
+        templatePills.querySelectorAll('.tpl-pill').forEach(x => x.classList.remove('sel'));
+        this.classList.add('sel');
+        handleUserQuery(this.dataset.query);
+      });
+    });
+  }
+  
+  const chatInput = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  
+  if (chatInput && sendBtn) {
+    sendBtn.addEventListener('click', function() {
+      if (chatInput.value.trim()) {
+        handleUserQuery(chatInput.value.trim());
+        chatInput.value = '';
+      }
+    });
+    
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && chatInput.value.trim()) {
+        handleUserQuery(chatInput.value.trim());
+        chatInput.value = '';
+      }
+    });
+  }
+  
+  setTimeout(() => {
+    addMessage('两节课中间只有15分钟，想吃点热的，预算20块以内，不想排队', true);
+    setTimeout(() => {
+      addAIResults(restaurants.slice(0, 3), '沙县周五晚高峰等位约+15分钟，今天可放心前往。');
+    }, 500);
+  }, 300);
+}
+
+let s2CurrentRestaurant = null;
+let s2IsFavorite = false;
+let s2CurrentScene = 'flash';
+
+const s2SceneData = {
+  flash: {
+    name: '两节课间隙',
+    satisfaction: 94,
+    opinion: '针对<strong>两节课间隙</strong>场景，同学评价高度一致：出餐速度是最大优势，几乎没有踩雷案例。唯一需要注意的是周五晚上。'
+  },
+  money: {
+    name: '月底省钱',
+    satisfaction: 88,
+    opinion: '针对<strong>月底省钱</strong>场景，性价比是核心优势，¥15就能吃饱，月底学生党的首选。'
+  },
+  study: {
+    name: '考前续命',
+    satisfaction: 71,
+    opinion: '针对<strong>考前续命</strong>场景，出餐稳定不踩雷，能快速补充能量，但环境嘈杂不适合复习。'
+  },
+  date: {
+    name: '约会',
+    satisfaction: 48,
+    opinion: '针对<strong>约会</strong>场景，环境是硬伤，更适合快去快回，不适合 leisurely 的约会。'
+  }
+};
+
+const s2Reviews = [
+  {
+    name: '邹明琪',
+    school: '天津财经 · 数管',
+    avatar: '邹',
+    avatarColor: 'var(--orange)',
+    frequency: '本月 3 次',
+    stars: 5,
+    scene: '两节课间隙',
+    text: '两节课间隙去的，点了<b>拌面加蒸饺</b>，6分钟就好了，分量很足，吃完刚好来得及上课。这个性价比在天财周边真的找不到第二家。',
+    date: '3 天前 · 经邮箱认证'
+  },
+  {
+    name: '王同学',
+    school: '南开大学',
+    avatar: '王',
+    avatarColor: 'var(--blue)',
+    frequency: '跨校 2 次',
+    stars: 4,
+    scene: '月底省钱',
+    text: '从南开骑过来专程吃的，¥15 的炒饭套餐含饮料，在这个物价水平里是真实惠。周五晚上等了约 20 分钟，其他时段很快。',
+    date: '上周 · 跨校来访 · 经邮箱认证'
+  },
+  {
+    name: '陈同学',
+    school: '天津财经 · 金融',
+    avatar: '陈',
+    avatarColor: '#8840C8',
+    frequency: '本月 5 次',
+    stars: 5,
+    scene: '考前续命',
+    text: '期末周连续5天午饭都在这吃，说明问题了。打包回图书馆也行，不会洒。就是环境嘈杂，不适合约会，快去快回完全没问题。',
+    date: '2 天前 · 经邮箱认证'
+  }
+];
+
+function s2RenderPeakChart() {
+  const chart = document.getElementById('s2-peakChart');
+  if (!chart) return;
+  const hours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  const heights = [30, 55, 90, 82, 45, 28, 22, 50, 88, 95, 60, 35];
+  const nowHour = new Date().getHours();
+
+  chart.innerHTML = hours.map((hour, i) => {
+    const isNow = hour === nowHour;
+    let barClass = 'pb-low';
+    if (heights[i] > 70) barClass = 'pb-high';
+    else if (heights[i] > 40) barClass = 'pb-mid';
+    
+    if (isNow) barClass = 'pb-now';
+
+    return `
+      <div class="peak-bar-wrap ${isNow ? 'peak-now' : ''}">
+        <div class="peak-bar-bg" ${isNow ? 'style="border:1.5px solid var(--orange);border-radius:3px 3px 0 0"' : ''}>
+          <div class="peak-bar-fill ${barClass}" style="height:${heights[i]}%"></div>
+          ${isNow ? '<div class="peak-now-marker"></div>' : ''}
+        </div>
+        <div class="peak-time">${hour}${isNow ? '★' : ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function s2RenderReviews() {
+  const list = document.getElementById('s2-reviewsList');
+  if (!list) return;
+  list.innerHTML = s2Reviews.map(review => `
+    <div class="s2-review-entry">
+      <div class="s2-rev-top">
+        <div class="s2-rev-user">
+          <div class="s2-rev-av" style="background:${review.avatarColor}">${review.avatar}</div>
+          <div class="s2-rev-user-info">
+            <div class="s2-rev-name">${review.name}</div>
+            <div class="s2-rev-meta-tags">
+              <span class="s2-rev-school">${review.school}</span>
+              <span class="s2-rev-freq">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+                ${review.frequency}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="s2-rev-right">
+          <div class="s2-rev-stars-mini">
+            ${Array(5).fill(0).map((_, i) => `
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="${i < review.stars ? 'var(--yellow)' : 'var(--muted-2)'}" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            `).join('')}
+          </div>
+          <span class="s2-rev-scene-tag">${review.scene}</span>
+        </div>
+      </div>
+      <div class="s2-rev-body">${review.text}</div>
+      <div class="s2-rev-date">${review.date}</div>
+    </div>
+  `).join('');
+}
+
+function s2UpdatePageData(restaurant) {
+  const data = {
+    name: restaurant.name,
+    branch: restaurant.school,
+    image: restaurant.image,
+    rating: restaurant.rating,
+    reviewCount: restaurant.reviews,
+    distance: restaurant.walkTime + ' · ' + restaurant.distance,
+    avgPrice: restaurant.price,
+    openTime: '至 22:00',
+    waitTime: parseInt(restaurant.speed),
+    crowd: 'low',
+    crowdText: '人流低',
+    crowdLabel: '无需等位'
+  };
+
+  const heroName = document.getElementById('s2-heroName');
+  if (heroName) heroName.textContent = data.name;
+  
+  const heroImage = document.getElementById('s2-heroImage');
+  if (heroImage) heroImage.src = data.image;
+  
+  const heroRating = document.getElementById('s2-heroRating');
+  if (heroRating) heroRating.textContent = data.rating;
+  
+  const heroReviewCnt = document.getElementById('s2-heroReviewCnt');
+  if (heroReviewCnt) heroReviewCnt.textContent = `（${data.reviewCount}条）`;
+  
+  const heroDistance = document.getElementById('s2-heroDistance');
+  if (heroDistance) heroDistance.textContent = data.distance;
+  
+  const statusPrice = document.getElementById('s2-statusPrice');
+  if (statusPrice) statusPrice.textContent = '¥' + data.avgPrice;
+  
+  const statusOpenTime = document.getElementById('s2-statusOpenTime');
+  if (statusOpenTime) statusOpenTime.textContent = data.openTime;
+  
+  const statusWaitTime = document.getElementById('s2-statusWaitTime');
+  if (statusWaitTime) statusWaitTime.textContent = '约 ' + data.waitTime + ' min';
+  
+  const statusCrowd = document.getElementById('s2-statusCrowd');
+  if (statusCrowd) {
+    statusCrowd.textContent = data.crowdText;
+    statusCrowd.className = 's2-status-val ' + (data.crowd === 'low' ? 's2-sv-green' : data.crowd === 'medium' ? 's2-sv-orange' : 's2-sv-red');
+  }
+  
+  const totalReviewCount = document.getElementById('s2-totalReviewCount');
+  if (totalReviewCount) totalReviewCount.textContent = data.reviewCount;
+}
+
+function s2SetScene(el, sceneId) {
+  document.querySelectorAll('.s2-scene-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  s2CurrentScene = sceneId;
+  
+  const scene = s2SceneData[sceneId];
+  const opinionLead = document.getElementById('s2-opinionLead');
+  if (opinionLead && scene) opinionLead.innerHTML = scene.opinion;
+}
+
+function s2GoBack() {
+  goBack();
+}
+
+function s2ToggleFav() {
+  s2IsFavorite = !s2IsFavorite;
+  const favIcon = document.getElementById('s2-favi');
+  if (favIcon) {
+    if (s2IsFavorite) {
+      favIcon.setAttribute('fill', 'var(--orange)');
+      favIcon.setAttribute('stroke', 'var(--orange)');
+    } else {
+      favIcon.setAttribute('fill', 'none');
+      favIcon.setAttribute('stroke', 'white');
+    }
+  }
+}
+
+function s2OpenSheet(type) {
+  const sheet = document.getElementById('s2-' + type + 'Sheet');
+  if (sheet) sheet.classList.add('show');
+}
+
+function s2CloseSheet(type) {
+  const sheet = document.getElementById('s2-' + type + 'Sheet');
+  if (sheet) sheet.classList.remove('show');
+}
+
+function s2ToggleSave(el) {
+  el.classList.toggle('selected');
+}
+
+function s2ConfirmSave() {
+  s2CloseSheet('save');
+  alert('收藏成功！');
+}
+
+function s2CopyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('链接已复制！');
+  });
+}
+
+function s2NavigateToRestaurant() {
+  alert('正在打开导航...');
+}
+
+function s2LoadMoreReviews() {
+  alert('正在加载更多评价...');
+}
+
+function s2Init() {
+  s2RenderPeakChart();
+  s2RenderReviews();
+}
+
+function updateRestaurantDetail(id) {
+  const r = restaurants[id];
+  s2CurrentRestaurant = r;
+  
+  s2UpdatePageData(r);
+  s2Init();
+}
+
+const annotations = {
+  home: {
+    left: [
+      { num: '01', title: '30秒决策入口', desc: '首页的核心目标：让你在两节课间隙也能快速决定吃什么。' },
+      { num: '02', title: '地图优先设计', desc: '不是冰冷的列表，而是用地图让你对周边美食有空间感知。' },
+      { num: '03', title: '时段智能推荐', desc: '根据当前时间自动调整推荐，早餐、午餐、夜宵各不相同。' }
+    ],
+    right: [
+      { num: '04', title: '场景一键触达', desc: '6个学生最高频场景，不用思考，点击就能找到对应的美食。' },
+      { num: '05', title: '实时人流看板', desc: '哪家店现在人少？地图上用颜色直观告诉你，避开高峰。' },
+      { num: '06', title: '今日特别推荐', desc: 'AI根据今日数据精选一家店，告诉你"现在去刚好"的理由。' }
+    ]
+  },
+  ai: {
+    left: [
+      { num: '01', title: '自然语言对话', desc: '不用填复杂表单，像跟同学聊天一样说出你的需求。' },
+      { num: '02', title: '场景理解引擎', desc: 'AI懂"两节课间隙"、"月底没钱"、"带爸妈"这些学生专属语境。' },
+      { num: '03', title: '实时约束感知', desc: '会自动考虑现在的时段、人流、预算，给出可行的方案。' }
+    ],
+    right: [
+      { num: '04', title: '结果有理有据', desc: '每个推荐都附同学评价摘要，让你知道为什么推荐这家。' },
+      { num: '05', title: '模板一键触发', desc: '5个最常用场景模板，点击直接生成推荐，连打字都省了。' },
+      { num: '06', title: '决策路径最短', desc: '从对话到详情页一键跳转，30秒内完成从需求到决策。' }
+    ]
+  },
+  detail: {
+    left: [
+      { num: '01', title: 'AI实时判断', desc: '不是静态信息，而是告诉你"现在去是不是最佳时机"。' },
+      { num: '02', title: '场景适配分析', desc: '这家店适合约会还是快餐？用数据说话，不是主观猜测。' },
+      { num: '03', title: '评价关键词提炼', desc: '从上百条评价里自动提取高频关键词，不用你一条条翻。' }
+    ],
+    right: [
+      { num: '04', title: '今日人流曲线', desc: '可视化展示全天人流变化，帮你找准最佳到店时间。' },
+      { num: '05', title: '校园认证保障', desc: '只有学生能评价，拒绝商家水军，每条评价都有学校标识。' },
+      { num: '06', title: '场景化推荐菜', desc: '根据你的场景推荐菜品，比如"两节课间隙"推荐最快出餐的组合。' }
+    ]
+  },
+  explore: {
+    left: [
+      { num: '01', title: '跨校美食联盟', desc: '5所高校的美食地图，发现其他学校的"秘密基地"。' },
+      { num: '02', title: '学校维度探索', desc: '按学校筛选，看看每个学校周边都有什么特色美食区。' },
+      { num: '03', title: '环形距离设计', desc: '用环形地图直观展示不同距离范围的餐厅，探索有层次感。' }
+    ],
+    right: [
+      { num: '04', title: '同学投票榜单', desc: '真实学生投票的排名，不是算法黑箱，而是集体智慧。' },
+      { num: '05', title: '新生入门指南', desc: '专门为新生准备的必吃清单，快速融入大学城美食圈。' },
+      { num: '06', title: '发现惊喜设计', desc: '探索页的目标不是"找到"，而是"发现"超出预期的美食。' }
+    ]
+  },
+  profile: {
+    left: [
+      { num: '01', title: '美食足迹记录', desc: '你的每一次探索、评价、收藏，都是大学生活的一部分。' },
+      { num: '02', title: '成长等级体系', desc: '探索越多、评价越多，等级越高，解锁专属功能。' },
+      { num: '03', title: '收藏夹分层管理', desc: '可以按场景创建收藏夹，比如"约会清单"、"月底救急"。' }
+    ],
+    right: [
+      { num: '04', title: '校园身份认证', desc: '用edu邮箱认证，获得专属标识，你的评价更有分量。' },
+      { num: '05', title: 'AI口味画像', desc: '根据你的收藏和评价，AI越来越懂你，推荐越来越准。' },
+      { num: '06', title: '隐私绝对优先', desc: '你的数据只用来给你提供更好的服务，不会被用于任何商业用途。' }
+    ]
+  },
+  list: {
+    left: [
+      { num: '01', title: '全量选择空间', desc: '大学城所有餐厅都在这里，给你充分的选择自由。' },
+      { num: '02', title: '多维度筛选器', desc: '价格、距离、菜系、场景，组合筛选找到完美匹配。' },
+      { num: '03', title: '卡片信息密度', desc: '每家店的卡片都经过精心设计，关键信息一眼扫完。' }
+    ],
+    right: [
+      { num: '04', title: '动态排序策略', desc: '默认"智能排序"综合考虑距离、评分、人流，也可以手动切换。' },
+      { num: '05', title: '场景标签系统', desc: '每家店都有清晰的场景标签，快速判断是否适合当前需求。' },
+      { num: '06', title: '热门标识突出', desc: '人气餐厅有特殊标识，"热"标签帮你快速找到大家都在吃的店。' }
+    ]
+  }
+};
+
+function updateAnnotations(screen) {
+  const leftCol = document.getElementById('ann-left');
+  const rightCol = document.getElementById('ann-right');
+  
+  const data = annotations[screen] || annotations.home;
+  
+  function renderAnns(anns) {
+    return anns.map(ann => `
+      <div class="ann">
+        <div class="ann-marker">
+          <span class="ann-num">${ann.num}</span>
+          <span class="ann-line-h"></span>
+        </div>
+        <div class="ann-title">${ann.title}</div>
+        <div class="ann-desc">${ann.desc}</div>
+      </div>
+    `).join('');
+  }
+  
+  leftCol.innerHTML = renderAnns(data.left);
+  rightCol.innerHTML = renderAnns(data.right);
+  
+  leftCol.classList.add('show');
+  rightCol.classList.add('show');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  initHomeRestaurants();
+  initCrossCampusList();
+  updateRankListBySchool('天津财大');
+  filterRestaurants('全部');
+  initAIChat();
+  renderTodaySpecial();
+  initMapPins();
+  updateAnnotations('home');
+  
+  const verifiedBadge = document.querySelector('#s4 .verified');
+  if (verifiedBadge) {
+    verifiedBadge.style.cursor = 'pointer';
+    verifiedBadge.onclick = showVerifyModal;
+  }
+});
+</script>
+</body>
+</html>
